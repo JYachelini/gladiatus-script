@@ -101,13 +101,24 @@
       }
     }
 
-    // Click en el inventario 1
-    const inventoryTab = document.querySelector(
-      "#inventory_nav a[data-bag-number='512']"
+    // Click en el personaje principal (usando doll=1)
+    const mainCharacter = document.querySelector(
+      "div.charmercsel[onclick*='doll=1']"
     );
-    if (inventoryTab) {
-      inventoryTab.click();
+    if (mainCharacter) {
+      mainCharacter.click();
     }
+
+    // Esperar un momento para que cargue el personaje
+    setTimeout(() => {
+      // Click en el inventario 1
+      const inventoryTab = document.querySelector(
+        "#inventory_nav a[data-bag-number='512']"
+      );
+      if (inventoryTab) {
+        inventoryTab.click();
+      }
+    }, 500);
 
     // Esperar un momento para que se cargue el inventario
     setTimeout(() => {
@@ -134,16 +145,31 @@
       });
 
       if (lowestFood) {
-        // Simular doble click en la comida
-        lowestFood.click();
-        setTimeout(() => {
-          lowestFood.click();
-        }, 100);
+        // Simular drag and drop a la imagen del personaje
+        const playerImage = document.querySelector("#avatar");
+        if (!playerImage) {
+          console.error("No se pudo encontrar la imagen del personaje");
+          return;
+        }
+
+        // Crear un evento de dragstart
+        const dragStartEvent = new Event("dragstart", {
+          bubbles: true,
+          cancelable: true,
+        });
+        lowestFood.dispatchEvent(dragStartEvent);
+
+        // Crear un evento de drop
+        const dropEvent = new Event("drop", {
+          bubbles: true,
+          cancelable: true,
+        });
+        playerImage.dispatchEvent(dropEvent);
 
         // Esperar un momento y recargar la página
-        setTimeout(() => {
+        /*setTimeout(() => {
           window.location.reload();
-        }, 1000);
+        }, 1000);*/
       }
     }, 500);
   }
