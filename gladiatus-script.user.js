@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.42
+// @version      1.43
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -1116,16 +1116,20 @@
       }
     });
 
-    $("#set_monster_id_0").click(function () {
+    $("#set_monster_id_0").on("click touchstart", function (e) {
+      e.preventDefault();
       setMonster("0");
     });
-    $("#set_monster_id_1").click(function () {
+    $("#set_monster_id_1").on("click touchstart", function (e) {
+      e.preventDefault();
       setMonster("1");
     });
-    $("#set_monster_id_2").click(function () {
+    $("#set_monster_id_2").on("click touchstart", function (e) {
+      e.preventDefault();
       setMonster("2");
     });
-    $("#set_monster_id_3").click(function () {
+    $("#set_monster_id_3").on("click touchstart", function (e) {
+      e.preventDefault();
       setMonster("3");
     });
 
@@ -1138,10 +1142,12 @@
       setDoDungeon(false);
     });
 
-    $("#set_dungeon_difficulty_normal").click(function () {
+    $("#set_dungeon_difficulty_normal").on("click touchstart", function (e) {
+      e.preventDefault();
       setDungeonDifficulty("normal");
     });
-    $("#set_dungeon_difficulty_advanced").click(function () {
+    $("#set_dungeon_difficulty_advanced").on("click touchstart", function (e) {
+      e.preventDefault();
       setDungeonDifficulty("advanced");
     });
 
@@ -1259,10 +1265,12 @@
       setQuestTypes("items");
     });
 
-    $("#do_event_expedition_true").click(function () {
+    $("#do_event_expedition_true").on("click touchstart", function (e) {
+      e.preventDefault();
       setDoEventExpedition(true);
     });
-    $("#do_event_expedition_false").click(function () {
+    $("#do_event_expedition_false").on("click touchstart", function (e) {
+      e.preventDefault();
       setDoEventExpedition(false);
     });
 
