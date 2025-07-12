@@ -231,7 +231,7 @@
   }
 
   const currentGold = parseFloat(
-    document.getElementById("sstat_gold_val").first().html().replace(/\./g, "")
+    document.getElementById("sstat_gold_val").innerHTML.replace(/\./g, "")
   );
 
   /*****************
