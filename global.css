@@ -17,7 +17,8 @@
     width: 538px;
     padding: 50px 40px;
     background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/settings.png');
-    display: block;
+    display: flex;
+    flex-direction: column;
     position: absolute;
     left: 375px;
     top: 150px;
@@ -31,10 +32,11 @@
     position: absolute;
     top: 20px;
     right: 62px;
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-weight: 400;
     font-size: 12px;
-    margin-bottom: 30px;
     cursor: default;
 }
 
@@ -46,18 +48,19 @@
 
 #settingsHeader
 {
-    display: block;
+    display: flex;
+    align-items: flex-start;
     padding-top: 20px;
     letter-spacing: 2px;
 }
 
 #settingsContent
 {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     margin-top: 20px;
-    grid-template-columns: 50% 50%;
-    grid-template-rows: 180px 130px 130px;
     width: 100%;
+    gap: 20px;
 }
 
 .settingsHeaderBig
@@ -105,16 +108,46 @@
     border-color: #58ffbb;
 }
 
-.settingsButton
-{
-    border: solid 1px #e9d2a0;
-    height: 25px;
-    width: 100%;
+.settings_box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    border: 1px solid #612d04;
+    border-radius: 5px;
+}
+
+.settings_box .settingsHeaderBig {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.settings_box .settingsSubcontent {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.settings_box .settingsHeaderSmall {
+    font-size: 14px;
+    font-weight: 400;
+    margin-top: 6px;
+}
+
+.settings_box .settingsSubcontent {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.settings_box .settingsButton {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 400;
-    margin: 0px 3px;
+    border: solid 1px #e9d2a0;
+    height: 25px;
+    width: 100%;
+    margin: 3px 0;
     border-radius: 5px;
     box-shadow: 0 0 0 1px #8e753f;
     font-size: 13px;
@@ -123,8 +156,7 @@
     background: linear-gradient(to bottom,#c3ab6f,#886933);
 }
 
-.settingsButton:hover
-{
+.settings_box .settingsButton:hover {
     background: linear-gradient(to bottom, #C3AB6F, #DACFA2);
     cursor: pointer;
 }
