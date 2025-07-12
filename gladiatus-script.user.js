@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.36
+// @version      1.37
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -685,33 +685,27 @@
   function setAutoFood(bool) {
     doAutoFood = bool;
     localStorage.setItem("doAutoFood", bool);
-    reloadSettings();
   }
 
   function setMinimumHealth(value) {
     minimumHealth = parseInt(value);
     localStorage.setItem("minimumHealth", minimumHealth);
-    reloadSettings();
   }
 
   // Safe mode settings
   function setSafeMode(bool) {
     safeMode = bool;
     localStorage.setItem("safeMode", bool);
-
-    reloadSettings();
   }
 
   function setDoExpedition(bool) {
     doExpedition = bool;
     localStorage.setItem("doExpedition", bool);
-    reloadSettings();
   }
 
   function setDoTraining(bool) {
     doTraining = bool;
     localStorage.setItem("doTraining", bool);
-    reloadSettings();
   }
 
   function setTrainingExpectations(stat, value) {
@@ -727,67 +721,56 @@
   function setMonster(id) {
     monsterId = id;
     localStorage.setItem("monsterId", id);
-    reloadSettings();
   }
 
   function setDoDungeon(bool) {
     doDungeon = bool;
     localStorage.setItem("doDungeon", bool);
-    reloadSettings();
   }
 
   function setDoArena(bool) {
     doArena = bool;
     localStorage.setItem("doArena", bool);
-    reloadSettings();
   }
 
   function setDungeonDifficulty(difficulty) {
     dungeonDifficulty = difficulty;
     localStorage.setItem("dungeonDifficulty", difficulty);
-    reloadSettings();
   }
 
   function setArenaOpponentLevel(level) {
     arenaOpponentLevel = level;
     localStorage.setItem("arenaOpponentLevel", level);
-    reloadSettings();
   }
 
   function setDoCircus(bool) {
     doCircus = bool;
     localStorage.setItem("doCircus", bool);
-    reloadSettings();
   }
 
   function setCircusOpponentLevel(level) {
     circusOpponentLevel = level;
     localStorage.setItem("circusOpponentLevel", level);
-    reloadSettings();
   }
 
   function setDoEventExpedition(bool) {
     doEventExpedition = bool;
     localStorage.setItem("doEventExpedition", bool);
-    reloadSettings();
   }
 
   function setQuestTypes(type) {
     questTypes[type] = !questTypes[type];
     localStorage.setItem("questTypes", JSON.stringify(questTypes));
-    reloadSettings();
   }
 
   function setDoQuests(bool) {
     doQuests = bool;
     localStorage.setItem("doQuests", bool);
-    reloadSettings();
   }
 
   function setEventMonster(id) {
     eventMonsterId = id;
     localStorage.setItem("eventMonsterId", id);
-    reloadSettings();
   }
 
   function closeSettings() {
@@ -802,13 +785,26 @@
     openSettings();
   }
 
+  function setLanguage(language) {
+    localStorage.setItem("settings.language", language);
+
+    switch (language) {
+      case "EN":
+        content = { ...contentEN };
+        break;
+      case "PL":
+        content = { ...contentPL };
+        break;
+      case "ES":
+        content = { ...contentES };
+        break;
+      default:
+        content = { ...contentEN };
+    }
+  }
+
   // Open Settings
   function openSettings() {
-    // Si el settingsWindow ya existe, no crear uno nuevo
-    if (document.getElementById("settingsWindow")) {
-      return;
-    }
-
     var settingsWindow = document.createElement("div");
     settingsWindow.setAttribute("id", "settingsWindow");
     settingsWindow.innerHTML = `
@@ -1012,26 +1008,6 @@
     document.getElementsByTagName("body")[0].appendChild(overlayBack);
 
     // Set Language
-
-    function setLanguage(language) {
-      localStorage.setItem("settings.language", language);
-
-      switch (language) {
-        case "EN":
-          content = { ...contentEN };
-          break;
-        case "PL":
-          content = { ...contentPL };
-          break;
-        case "ES":
-          content = { ...contentES };
-          break;
-        default:
-          content = { ...contentEN };
-      }
-
-      reloadSettings();
-    }
 
     $("#languageEN").click(function () {
       setLanguage("EN");
