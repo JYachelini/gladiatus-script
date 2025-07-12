@@ -10,138 +10,147 @@
 }
 
 #settingsWindow {
-    height: 511px;
-    width: 538px;
-    padding: 50px 40px;
-    /* Removed background-image */
+    /* Dimensions and positioning */
+    width: 90%; /* Use percentage for responsiveness */
+    max-width: 900px; /* Max width to prevent it from becoming too wide on large screens */
+    padding: 20px 30px; /* Reduced padding for more content space */
+    position: absolute;
+    left: 50%; /* Center horizontally */
+    top: 50%; /* Center vertically */
+    transform: translate(-50%, -50%); /* Use transform for perfect centering */
+    z-index: 999;
+
+    /* Background and appearance */
     background-color: #f0ead6; /* A light, warm background color */
     border: 2px solid #612d04; /* A dark brown border */
     border-radius: 10px; /* Rounded corners for a softer look */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* A subtle shadow for depth */
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    left: 375px;
-    top: 150px;
-    z-index: 999;
+
+    /* Text styling */
     color: #612d04;
     font: 600 16px Arial;
+
+    /* Flexbox for main content arrangement */
+    display: flex;
+    flex-direction: column;
+    
+    /* Ensure modal content fits and scrolls only if absolutely necessary */
+    max-height: 90vh; /* Set max height based on viewport height */
+    overflow-y: hidden; /* Hide overflow initially, content handles its own scroll */
 }
 
 #settingsLanguage {
     position: absolute;
-    top: 20px;
-    right: 62px;
+    top: 15px; /* Adjusted position */
+    right: 20px; /* Adjusted position */
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px; /* Slightly reduced gap */
     font-weight: 400;
-    font-size: 12px;
+    font-size: 11px; /* Slightly smaller font for flags */
     cursor: default;
 }
 
 #settingsLanguage img {
     cursor: pointer;
     border: 1px solid #612d04;
-    border-radius: 3px; /* Slightly rounded corners for flag images */
+    border-radius: 3px;
+    width: 24px; /* Standardize flag size */
+    height: 16px; /* Standardize flag size */
+    object-fit: cover;
 }
 
 #settingsLanguage img:hover {
-    opacity: 0.8; /* Slight opacity change on hover for flags */
+    opacity: 0.8;
 }
 
 #settingsHeader {
     display: flex;
-    align-items: flex-start;
-    padding-top: 20px;
+    align-items: center; /* Center header vertically */
+    justify-content: center; /* Center header text horizontally */
+    padding-top: 10px; /* Adjusted padding */
+    padding-bottom: 15px; /* Add bottom padding */
     letter-spacing: 2px;
-    color: #390301; /* Darker color for the header */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle text shadow */
+    color: #390301;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    font-size: 20px; /* Slightly larger header */
+    flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 #settingsContent {
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 20px;
-    width: 100%;
-    gap: 20px;
-    justify-content: space-between;
+    display: grid; /* Use CSS Grid for a flexible layout */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Responsive columns */
+    gap: 15px; /* Reduced gap between boxes */
+    flex-grow: 1; /* Allow content to grow and fill available space */
+    overflow-y: auto; /* Allow scrolling for content if it exceeds modal height */
+    padding-right: 5px; /* Add some padding for scrollbar if present */
 }
 
 .settingsHeaderBig {
-    margin: 3px 0px;
-    color: #390301; /* Consistent dark color for big headers */
+    margin: 0 0 8px 0; /* Adjusted margins */
+    color: #390301;
+    font-size: 16px; /* Ensure readability */
 }
 
 .settingsHeaderSmall {
-    font-size: 14px;
+    font-size: 13px; /* Slightly smaller font */
     font-weight: 400;
-    margin-top: 6px;
-    color: #612d04; /* Consistent color for small headers */
+    margin-top: 5px; /* Adjusted margin */
+    color: #612d04;
 }
 
 .settingsSubcontent {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px; /* Reduced gap within subcontent */
 }
 
 .stat-input-container {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 5px;
+    gap: 8px; /* Reduced gap */
+    padding: 3px; /* Reduced padding */
 }
 
 .stat-input-container span {
     font-weight: bold;
     color: #612d04;
+    font-size: 13px; /* Standardize font size */
+    min-width: 30px; /* Ensure labels align */
 }
 
 .stat-input-container input {
-    width: 100px;
-    padding: 5px;
-    border: 1px solid #8e753f; /* Softer border color */
+    width: 80px; /* Reduced width */
+    padding: 4px; /* Reduced padding */
+    border: 1px solid #8e753f;
     border-radius: 3px;
-    background-color: #fffaf0; /* Off-white background */
-    color: #390301; /* Darker text color */
-    font: 600 14px Arial;
+    background-color: #fffaf0;
+    color: #390301;
+    font: 600 13px Arial; /* Standardize font size */
 }
 
 .stat-input-container input:focus {
     outline: none;
-    border-color: #c3ab6f; /* Focus color matching button highlight */
-    box-shadow: 0 0 5px rgba(195, 171, 111, 0.5); /* Subtle shadow on focus */
+    border-color: #c3ab6f;
+    box-shadow: 0 0 5px rgba(195, 171, 111, 0.5);
 }
 
 .settings_box {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 15px;
-    border: 1px solid #8e753f; /* Consistent border color */
-    border-radius: 8px; /* Slightly more rounded corners */
-    flex: 1 1 45%;
-    min-width: 200px;
-    background-color: #fff; /* White background for each box */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for each box */
+    gap: 8px; /* Reduced gap within boxes */
+    padding: 12px; /* Reduced padding */
+    border: 1px solid #8e753f;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    min-width: 220px; /* Ensure a minimum width for grid items */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
 .settings_box .settingsHeaderBig {
     font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.settings_box .settingsSubcontent {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.settings_box .settingsHeaderSmall {
-    font-size: 14px;
-    font-weight: 400;
-    margin-top: 6px;
+    margin-bottom: 8px;
 }
 
 .settings_box .settingsButton {
@@ -155,102 +164,103 @@
     border-radius: 5px;
     box-shadow: 0 0 0 1px #8e753f;
     font-size: 13px;
-    color: #390301; /* Text color for buttons */
-    background: linear-gradient(to bottom, #d4be8a, #ac8d4f); /* Richer gradient */
-    transition: all 0.2s ease-in-out; /* Smooth transition for hover effects */
+    color: #390301;
+    background: linear-gradient(to bottom, #d4be8a, #ac8d4f);
+    transition: all 0.2s ease-in-out;
+    white-space: nowrap; /* Prevent button text from wrapping */
 }
 
 .settings_box .settingsButton:hover {
-    background: linear-gradient(to bottom, #e9d2a0, #c3ab6f); /* Lighter gradient on hover */
+    background: linear-gradient(to bottom, #e9d2a0, #c3ab6f);
     cursor: pointer;
-    box-shadow: 0 0 0 1px #612d04; /* Darker shadow on hover */
+    box-shadow: 0 0 0 1px #612d04;
 }
 
 .settings_box.active .settingsButton.active {
     border: solid 1px #44dc46;
-    background: linear-gradient(to bottom, #72c674, #44dc46); /* Green gradient for active */
-    color: #fff; /* White text for active buttons */
+    background: linear-gradient(to bottom, #72c674, #44dc46);
+    color: #fff;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
 .settings_box.inactive .settingsButton.active {
     border: solid 1px #ea1414;
-    background: linear-gradient(to bottom, #f25f5f, #ea1414); /* Red gradient for inactive active */
+    background: linear-gradient(to bottom, #f25f5f, #ea1414);
     color: #fff;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
 .quest-type {
-    background-size: cover; /* Changed to cover to ensure image fills the area */
-    background-position: center; /* Center the background image */
-    height: 31px;
-    width: 31px;
-    margin: 0px 2px;
-    border: 1px solid #8e753f; /* Added a border to quest type icons */
-    border-radius: 3px; /* Slightly rounded corners */
-    transition: all 0.2s ease-in-out; /* Smooth transition */
+    background-size: cover;
+    background-position: center;
+    height: 30px; /* Slightly adjusted size */
+    width: 30px; /* Slightly adjusted size */
+    margin: 0 2px;
+    border: 1px solid #8e753f;
+    border-radius: 3px;
+    transition: all 0.2s ease-in-out;
+    flex-shrink: 0; /* Prevent icons from shrinking */
 }
 
 .quest-type:hover {
     filter: brightness(1.2);
-    transform: scale(1.05); /* Slightly enlarge on hover */
+    transform: scale(1.05);
 }
 
-/* Specific quest type active/inactive states remain as they were, assuming the images provide the visual cue */
 .quest-type.combat {
-    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_combat_inactive.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_combat_inactive.jpg');
 }
 
 .quest-type.combat.active {
-    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_combat_active.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_combat_active.jpg');
 }
 
 .quest-type.arena {
-    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_arena_inactive.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_arena_inactive.jpg');
 }
 
 .quest-type.arena.active {
-    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_arena_active.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_arena_active.jpg');
 }
 
 .quest-type.circus {
-    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_grouparena_inactive.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_grouparena_inactive.jpg');
 }
 
 .quest-type.circus.active {
-    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_grouparena_active.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_grouparena_active.jpg');
 }
 
 .quest-type.expedition {
-    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_expedition_inactive.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_expedition_inactive.jpg');
 }
 
 .quest-type.expedition.active {
-    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_expedition_active.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_expedition_active.jpg');
 }
 
 .quest-type.dungeon {
-    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_dungeon_inactive.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_dungeon_inactive.jpg');
 }
 
 .quest-type.dungeon.active {
-    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_dungeon_active.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_dungeon_active.jpg');
 }
 
 .quest-type.items {
-    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_items_inactive.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_items_inactive.jpg');
 }
 
 .quest-type.items.active {
-    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_items_active.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_items_active.jpg');
 }
 
 #overlayBack {
-    position: absolute;
+    position: fixed; /* Use fixed to cover the entire viewport */
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%; /* Ensure overlay covers the full height */
+    height: 100%;
     background: #000;
     opacity: 0.6;
     z-index: 900;
