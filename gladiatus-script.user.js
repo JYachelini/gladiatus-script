@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.12
+// @version      1.13
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -169,7 +169,16 @@
     }
   }
 
-  //Taining
+  //Training
+
+  const trainingValuesLinks = {
+    str: "skillToTrain=1",
+    dex: "skillToTrain=2",
+    agi: "skillToTrain=3",
+    char: "skillToTrain=4",
+    const: "skillToTrain=5",
+    int: "skillToTrain=6",
+  };
 
   let doTraining = true;
   if (localStorage.getItem("doTraining")) {
@@ -191,7 +200,7 @@
 
   let currentTraining = {
     str: 0,
-    dex: 0,
+    dex: 100,
     agi: 0,
     char: 0,
     const: 0,
@@ -881,7 +890,7 @@
         ".training_costs span"
       );
       trainingValues.forEach((value, i) => {
-        const content = value.textContent.trim();
+        const content = value.textContent.trim().replace(/\./g, "");
         console.log(content);
 
         switch (i) {
@@ -921,7 +930,11 @@
           "#char_f5 > div:first-child"
       );
       trainingValues.forEach((value, i) => {
-        const content = value.textContent.trim().split("+")[0].trim();
+        const content = value.textContent
+          .trim()
+          .split("+")[0]
+          .trim()
+          .replace(/\./g, "");
 
         console.log(content);
 
@@ -1024,6 +1037,7 @@
     if (doTraining) {
       const isPageTraining = window.location.href.includes("mod=training");
       if (!isPageTraining) {
+        const trainingLink = document.querySelector('a[href*="mod=training"]');
         if (
           !trainingCosts.dex ||
           !trainingCosts.agi ||
@@ -1032,22 +1046,35 @@
           !trainingCosts.const ||
           !trainingCosts.int
         ) {
-          const trainingLink = document.querySelector(
-            'a[href*="mod=training"]'
-          );
           if (trainingLink) {
             trainingLink.click();
           }
         }
       } else {
-        console.log("Extracting training values");
         extractTrainingValues();
         extractTrainingCosts();
-        console.log(getNextStatToTrain());
+      }
+
+      const nextStatToTrain = getNextStatToTrain();
+
+      if (nextStatToTrain) {
+        const goldNeeded = trainingCosts[nextStatToTrain];
+        const goldAvailable = player.gold;
+
+        if (goldAvailable >= goldNeeded) {
+          if (!isPageTraining) {
+            const trainingLink = document.querySelector(
+              'a[href*="mod=training&submod=train&' +
+                trainingValuesLinks[nextStatToTrain] +
+                '"]'
+            );
+            if (trainingLink) {
+              trainingLink.click();
+            }
+          }
+        }
       }
     }
-    console.log(trainingCosts);
-    setTimeout({}, 100000000);
 
     /***************
      *   Use Food   *
