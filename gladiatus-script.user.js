@@ -1,16 +1,16 @@
 // ==UserScript==
-// @name         Gladiatus Script
-// @version      2.6.4
-// @description  Dodatek do gry Gladiatus
-// @author       Eryk Bodziony
+// @name         Gladiatus Script - Yache version
+// @version      1.0.0
+// @description  Gladiatus Script
+// @author       Yache
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
 // @exclude      *://*.gladiatus.gameforge.com/game/index.php?mod=start
-// @downloadURL  https://github.com/ebodziony/gladiatus-script/raw/master/gladiatus-script.js
-// @updateURL    https://github.com/ebodziony/gladiatus-script/raw/master/gladiatus-script.js
+// @downloadURL  https://github.com/yache/gladiatus-script/raw/master/gladiatus-script.js
+// @updateURL    https://github.com/yache/gladiatus-script/raw/master/gladiatus-script.js
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js
-// @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/global.css?ver=2.6.4
+// @resource     customCSS_global  https://raw.githubusercontent.com/yache/gladiatus-script/master/global.css?ver=2.6.4
 // ==/UserScript==
 
 
@@ -151,6 +151,12 @@
             eventPoints = savedEventPoints.count;
         };
     };
+
+    //Taining
+
+    let dexReq = 0
+    let agiReq = 0
+    let charReq = 0
 
     /*****************
     *  Translations  *
@@ -710,6 +716,23 @@
             }, clickDelay);
         };
 
+        const lootModal = document.querySelector('.loot-modal');
+
+        if (lootModal) {
+            // If it exists, find all buttons with the class 'loot-button' within it
+            const lootButtons = lootModal.querySelectorAll('.loot-button');
+
+            // Check if there are at least three buttons
+            if (lootButtons.length >= 3) {
+                // Click the third button (index 2 because arrays are 0-indexed)
+                lootButtons[2].click();
+            } else {
+                console.log("Not enough 'loot-button' elements found within the 'loot-modal'.");
+            }
+        } else {
+            console.log("The 'loot-modal' div does not exist.");
+        }
+
         /***************
         *   Use Food   *
         ***************/
@@ -756,6 +779,7 @@
                     $("#mainmenu a.menuitem")[1].click();
                 } else {
                     const completedQuests = $("#content .contentboard_slot a.quest_slot_button_finish");
+                    console.log(completedQuests)
 
                     if (completedQuests.length) {
                         completedQuests[0].click();
@@ -777,33 +801,33 @@
 
             function takeQuest() {
                 const canTakeQuest = $("#content .contentboard_slot a.quest_slot_button_accept");
+                console.log(canTakeQuest)
 
                 if (canTakeQuest.length) {
                     function getIconName(url) {
-                        if (url.includes('8aada67d4c5601e009b9d2a88f478c')) {
-                            return 'combat';
-                        }
-                        
-                        if (url.includes('00f1a594723515a77dcd6d66c918fb')) {
-                            return 'arena';
-                        }
-
-                        if (url.includes('586768e942030301c484347698bc5e')) {
+                        if (url.includes('icon_grouparena_inactive')) {
                             return 'circus';
                         }
 
-                        if (url.includes('4e41ab43222200aa024ee177efef8f')) {
-                            return 'expedition';
-                        }
-
-                        if (url.includes('dc366909fdfe69897d583583f6e446')) {
+                        if (url.includes('icon_dungeon_inactive')) {
                             return 'dungeon';
                         }
 
-                        if (url.includes('5a358e0a030d8551a5a65d284c8730')) {
-                            return 'items';
+                        if (url.includes('icon_combat_inactive')) {
+                            return 'combat';
                         }
 
+                        if (url.includes('icon_items_inactive')) {
+                            return 'items';
+                        }
+                        
+                        if (url.includes('icon_arena_inactive')) {
+                            return 'arena';
+                        }
+
+                        if (url.includes('icon_expedition_inactive')) {
+                            return 'expedition';
+                        }
                         return null;
                     }
 
@@ -980,6 +1004,12 @@
                         }
 
                         document.getElementsByClassName("attack")[opponentIndex].click();
+
+                        // added if reached 5 figths
+                        setTimeout(function(){
+                            const retry = document.getElementById("linkbod")
+                            if(retry)retry.click()
+                        }, clickDelay + 100)
                     };
                 };
             };
