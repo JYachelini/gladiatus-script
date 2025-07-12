@@ -160,17 +160,12 @@
         }
 
         // Obtener las coordenadas de la comida
-        const bagNumber = parseInt(
-          lowestFood
-            .closest("[data-bag-number]")
-            .getAttribute("data-bag-number")
-        );
         const xCoord = parseInt(lowestFood.getAttribute("data-position-x"));
         const yCoord = parseInt(lowestFood.getAttribute("data-position-y"));
 
         // Preparar los datos para el AJAX
         const params = new URLSearchParams({
-          from: bagNumber,
+          from: 512, // Inventario principal
           fromX: xCoord,
           fromY: yCoord,
           to: 8, // player portrait
