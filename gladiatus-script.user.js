@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.40
+// @version      1.41
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -1291,21 +1291,21 @@
 
   if (autoGoActive == false) {
     autoGoButton.innerHTML = "Auto GO";
-    autoGoButton.addEventListener("click", function(e) {
+    autoGoButton.addEventListener("click", function (e) {
       e.preventDefault();
       setAutoGoActive();
     });
-    autoGoButton.addEventListener("touchstart", function(e) {
+    autoGoButton.addEventListener("touchstart", function (e) {
       e.preventDefault();
       setAutoGoActive();
     });
   } else {
     autoGoButton.innerHTML = "STOP";
-    autoGoButton.addEventListener("click", function(e) {
+    autoGoButton.addEventListener("click", function (e) {
       e.preventDefault();
       setAutoGoInactive();
     });
-    autoGoButton.addEventListener("touchstart", function(e) {
+    autoGoButton.addEventListener("touchstart", function (e) {
       e.preventDefault();
       setAutoGoInactive();
     });
@@ -1326,11 +1326,11 @@
     "style",
     "display: flex; justify-content: center; align-items: center; height: 27px; width: 27px; cursor: pointer; border: none; color: #5dce5d; padding: 0; background-image: url('https://i.imgur.com/jf7BXTX.png')"
   );
-  settingsButton.addEventListener("click", function(e) {
+  settingsButton.addEventListener("click", function (e) {
     e.preventDefault();
     openSettings();
   });
-  settingsButton.addEventListener("touchstart", function(e) {
+  settingsButton.addEventListener("touchstart", function (e) {
     e.preventDefault();
     openSettings();
   });
