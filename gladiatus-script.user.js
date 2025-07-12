@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.30
+// @version      1.31
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -148,31 +148,73 @@
       });
 
       if (lowestFood) {
-        // Simular drag and drop a la imagen del personaje
-        const playerImage = document.querySelector("#avatar");
-        if (!playerImage) {
-          console.error("No se pudo encontrar la imagen del personaje");
+        // Obtener el secure hash y token CSRF
+        const secureHash = window.location.search.match(/sh=([^&]+)/)?.[1];
+        const csrfToken = document.querySelector(
+          'meta[name="csrf-token"]'
+        )?.content;
+
+        if (!secureHash || !csrfToken) {
+          console.error("No se pudo obtener secure hash o CSRF token");
           return;
         }
 
-        // Crear un evento de dragstart
-        const dragStartEvent = new Event("dragstart", {
-          bubbles: true,
-          cancelable: true,
-        });
-        lowestFood.dispatchEvent(dragStartEvent);
+        // Obtener las coordenadas de la comida
+        const bagNumber = parseInt(
+          lowestFood
+            .closest("[data-bag-number]")
+            .getAttribute("data-bag-number")
+        );
+        const xCoord = parseInt(lowestFood.getAttribute("data-position-x"));
+        const yCoord = parseInt(lowestFood.getAttribute("data-position-y"));
 
-        // Crear un evento de drop
-        const dropEvent = new Event("drop", {
-          bubbles: true,
-          cancelable: true,
+        // Preparar los datos para el AJAX
+        const params = new URLSearchParams({
+          from: bagNumber,
+          fromX: xCoord,
+          fromY: yCoord,
+          to: 8, // player portrait
+          toX: 1,
+          toY: 1,
+          amount: 1,
+          doll: 1,
+          sh: secureHash,
         });
-        playerImage.dispatchEvent(dropEvent);
 
-        // Esperar un momento y recargar la página
-        /*setTimeout(() => {
-          window.location.reload();
-        }, 1000);*/
+        const requestUrl = `ajax.php?mod=inventory&submod=move&${params}`;
+        const bodyParams = new URLSearchParams();
+        bodyParams.append("a", new Date().getTime());
+
+        // Hacer la petición AJAX
+        fetch(requestUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "X-CSRF-Token": csrfToken,
+            "X-Requested-With": "XMLHttpRequest",
+            Origin: window.location.origin,
+            Referer: `${window.location.origin}/game/index.php?mod=overview&sh=${secureHash}`,
+          },
+          body: bodyParams,
+          credentials: "include",
+        })
+          .then((response) => response.text())
+          .then((text) => {
+            console.log("Raw response:", text);
+            try {
+              const data = JSON.parse(text);
+              console.log("Parsed JSON:", data);
+              // Recargar la página después de consumir la comida
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+            } catch (e) {
+              console.error("JSON parsing failed", e);
+            }
+          })
+          .catch((error) => {
+            console.error("Fetch error:", error);
+          });
       }
     }, 500);
   }
