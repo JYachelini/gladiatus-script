@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.24
+// @version      1.25
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -80,7 +80,9 @@
   function consumeLowestFood() {
     // Si no estamos en overview, buscar y hacer clic en el enlace
     if (!isInOverviewPage()) {
-      const overviewLink = document.querySelector("a[href*='mod=overview']");
+      const overviewLink = document.querySelector(
+        "a.menuitem[href*='mod=overview']"
+      );
       if (overviewLink) {
         overviewLink.click();
         return; // Detener la ejecución después de hacer clic
