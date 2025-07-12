@@ -928,7 +928,7 @@
           !training.intReq
         ) {
           const trainingLink = document.querySelector(
-            'a[href="index.php?mod=training&sh=9af516f98e9f93ffde5056b12c962763"]'
+            'a[href*="mod=training"]'
           );
           if (trainingLink) {
             trainingLink.click();
