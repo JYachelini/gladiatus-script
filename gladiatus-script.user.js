@@ -1066,7 +1066,7 @@
 
         if (goldAvailable >= goldNeeded) {
           if (!isPageTraining) {
-            trainingLink.click();
+            isPageTraining.click();
           } else {
             const trainingLink = document.querySelector(
               'a[href*="mod=training&submod=train&' +
