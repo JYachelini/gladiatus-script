@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.18
+// @version      1.19
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -990,7 +990,6 @@
       );
       trainingValues.forEach((value, i) => {
         const content = value.textContent.trim().replace(/\./g, "");
-        console.log(content);
 
         switch (i) {
           case 0:
@@ -1035,8 +1034,6 @@
           .trim()
           .replace(/\./g, "");
 
-        console.log(content);
-
         switch (i) {
           case 0:
             currentTraining.str = parseInt(content, 10);
@@ -1059,6 +1056,7 @@
         }
       });
       localStorage.setItem("currentTraining", JSON.stringify(currentTraining));
+      localStorage.setItem("trainingCosts", JSON.stringify(trainingCosts));
     }
   }
 
