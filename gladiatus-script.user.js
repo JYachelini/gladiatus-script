@@ -242,6 +242,7 @@
   const currentGold = parseFloat(
     document.getElementById("sstat_gold_val").innerHTML.replace(/\./g, "")
   );
+  console.log(currentGold);
 
   /*****************
    *  Translations  *
@@ -1056,10 +1057,12 @@
       }
 
       const nextStatToTrain = getNextStatToTrain();
+      console.log(nextStatToTrain);
 
       if (nextStatToTrain) {
         const goldNeeded = trainingCosts[nextStatToTrain];
         const goldAvailable = player.gold;
+        console.log(goldNeeded, goldAvailable);
 
         if (goldAvailable >= goldNeeded) {
           if (!isPageTraining) {
