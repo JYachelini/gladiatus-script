@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.16
+// @version      1.17
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -1066,7 +1066,12 @@
 
         if (goldAvailable >= goldNeeded) {
           if (!isPageTraining) {
-            isPageTraining.click();
+            const trainingLink = document.querySelector(
+              'a[href*="mod=training"]'
+            );
+            if (trainingLink) {
+              trainingLink.click();
+            }
           } else {
             const trainingLink = document.querySelector(
               'a[href*="mod=training&submod=train&' +
