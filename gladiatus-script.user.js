@@ -860,6 +860,7 @@
             break;
         }
       });
+      localStorage.setItem("training", JSON.stringify(training));
     }
   }
 
