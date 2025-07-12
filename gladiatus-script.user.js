@@ -13,297 +13,330 @@
 // @resource     customCSS_global  https://raw.githubusercontent.com/JYachelini/gladiatus-script/refs/heads/master/global.css
 // ==/UserScript==
 
+(function () {
+  "use strict";
 
-(function() {
-    'use strict';
+  // Add CSS
 
-    // Add CSS
+  function addCustomCSS() {
+    const globalCSS = GM_getResourceText("customCSS_global");
+    GM_addStyle(globalCSS);
+  }
 
-    function addCustomCSS() {
-        const globalCSS = GM_getResourceText("customCSS_global");
-        GM_addStyle(globalCSS);
-    };
+  addCustomCSS();
 
-    addCustomCSS();
+  /*****************
+   *     Global     *
+   *****************/
 
-    /*****************
-    *     Global     *
-    *****************/
+  const assetsUrl =
+    "https://raw.githubusercontent.com/JYachelini/gladiatus-script/d9bb62a298d39d6f869a791f3dba074140b68250/assets";
 
-    const assetsUrl = 'https://raw.githubusercontent.com/JYachelini/gladiatus-script/d9bb62a298d39d6f869a791f3dba074140b68250/assets';
+  console.log("test");
+  console.log("test desde github");
 
-    console.log("test");
-    console.log("test desde github");
+  let autoGoActive =
+    sessionStorage.getItem("autoGoActive") === "true" ? true : false;
 
+  const currentDate = $("#server-time").html().split(",")[0];
 
-    let autoGoActive = sessionStorage.getItem('autoGoActive') === "true" ? true : false;
+  const player = {
+    level: Number($("#header_values_level").first().html()),
+    hp: Number(
+      $("#header_values_hp_percent")
+        .first()
+        .html()
+        .replace(/[^0-9]/gi, "")
+    ),
+    gold: Number($("#sstat_gold_val").first().html().replace(/\./g, "")),
+  };
 
-    const currentDate = $("#server-time").html().split(',')[0];
+  /*****************
+   *     Config     *
+   *****************/
 
-    const player = {
-        level: Number($("#header_values_level").first().html()),
-        hp: Number($("#header_values_hp_percent").first().html().replace(/[^0-9]/gi, '')),
-        gold: Number($("#sstat_gold_val").first().html().replace(/\./g, '')),
-    };
+  // Mode
 
-    /*****************
-    *     Config     *
-    *****************/
+  let safeMode = false;
+  let nextEncounterTime = Number(localStorage.getItem("nextEncounter"));
 
-    // Mode
+  // Quests
 
-    let safeMode = false;
-    let nextEncounterTime = Number(localStorage.getItem('nextEncounter'));
+  let doQuests = true;
+  if (localStorage.getItem("doQuests")) {
+    doQuests = localStorage.getItem("doQuests") === "true" ? true : false;
+  }
+  let questTypes = {
+    combat: true,
+    arena: true,
+    circus: true,
+    expedition: true,
+    dungeon: true,
+    items: true,
+  };
+  if (localStorage.getItem("questTypes")) {
+    questTypes = JSON.parse(localStorage.getItem("questTypes"));
+  }
+  let nextQuestTime = 0;
+  if (localStorage.getItem("nextQuestTime")) {
+    nextQuestTime = Number(localStorage.getItem("nextQuestTime"));
+  }
 
-    // Quests
+  // Expedition
 
-    let doQuests = true;
-    if (localStorage.getItem('doQuests')) {
-        doQuests = localStorage.getItem('doQuests') === "true" ? true : false;
+  let doExpedition = true;
+  if (localStorage.getItem("doExpedition")) {
+    doExpedition =
+      localStorage.getItem("doExpedition") === "true" ? true : false;
+  }
+  let monsterId = 0;
+  if (localStorage.getItem("monsterId")) {
+    monsterId = Number(localStorage.getItem("monsterId"));
+  }
+
+  // Dungeon
+
+  let doDungeon = true;
+  if (localStorage.getItem("doDungeon")) {
+    doDungeon = localStorage.getItem("doDungeon") === "true" ? true : false;
+  }
+  if (player.level < 10) {
+    doDungeon = false;
+  }
+  let dungeonDifficulty =
+    localStorage.getItem("dungeonDifficulty") === "advanced"
+      ? "advanced"
+      : "normal";
+
+  // Arena
+
+  let doArena = true;
+  if (localStorage.getItem("doArena")) {
+    doArena = localStorage.getItem("doArena") === "true" ? true : false;
+  }
+  if (player.level < 2) {
+    doArena = false;
+  }
+  let arenaOpponentLevel = "min";
+  if (localStorage.getItem("arenaOpponentLevel")) {
+    arenaOpponentLevel = localStorage.getItem("arenaOpponentLevel");
+  }
+
+  // Circus
+
+  let doCircus = true;
+  if (localStorage.getItem("doCircus")) {
+    doCircus = localStorage.getItem("doCircus") === "true" ? true : false;
+  }
+  if (player.level < 10) {
+    doCircus = false;
+  }
+  let circusOpponentLevel = "min";
+  if (localStorage.getItem("circusOpponentLevel")) {
+    circusOpponentLevel = localStorage.getItem("circusOpponentLevel");
+  }
+
+  // Event Expedition
+
+  let doEventExpedition = true;
+  if (localStorage.getItem("doEventExpedition")) {
+    doEventExpedition =
+      localStorage.getItem("doEventExpedition") === "true" ? true : false;
+  }
+  if (
+    !document
+      .getElementById("submenu2")
+      .getElementsByClassName("menuitem glow")[0]
+  ) {
+    doEventExpedition = false;
+  }
+
+  let eventMonsterId = 0;
+  if (localStorage.getItem("eventMonsterId")) {
+    eventMonsterId = Number(localStorage.getItem("eventMonsterId"));
+  }
+
+  let nextEventExpeditionTime = 0;
+  if (localStorage.getItem("nextEventExpeditionTime")) {
+    nextEventExpeditionTime = Number(
+      localStorage.getItem("nextEventExpeditionTime")
+    );
+  }
+
+  let eventPoints = 16;
+  if (localStorage.getItem("eventPoints")) {
+    const savedEventPoints = JSON.parse(localStorage.getItem("eventPoints"));
+
+    if (savedEventPoints.date === currentDate) {
+      eventPoints = savedEventPoints.count;
     }
-    let questTypes = {
-        combat: true,
-        arena: true,
-        circus: true,
-        expedition: true,
-        dungeon: true,
-        items: true
-    };
-    if (localStorage.getItem('questTypes')) {
-        questTypes = JSON.parse(localStorage.getItem('questTypes'));
-    }
-    let nextQuestTime = 0;
-    if (localStorage.getItem('nextQuestTime')) {
-        nextQuestTime = Number(localStorage.getItem('nextQuestTime'));
-    }
+  }
 
-    // Expedition
+  //Taining
 
-    let doExpedition = true;
-    if (localStorage.getItem('doExpedition')) {
-        doExpedition = localStorage.getItem('doExpedition') === "true" ? true : false;
-    };
-    let monsterId = 0;
-    if (localStorage.getItem('monsterId')) {
-        monsterId = Number(localStorage.getItem('monsterId'));
-    };
+  let doTraining = true;
+  if (localStorage.getItem("doTraining")) {
+    doTraining = localStorage.getItem("doTraining") === "true" ? true : false;
+  }
 
-    // Dungeon
+  let training = {
+    dexReq: 0,
+    agiReq: 0,
+    charReq: 0,
+    strReq: 0,
+    constReq: 0,
+    intReq: 0,
+  };
 
-    let doDungeon = true;
-    if (localStorage.getItem('doDungeon')) {
-        doDungeon = localStorage.getItem('doDungeon') === "true" ? true : false;
-    };
-    if (player.level < 10) {
-        doDungeon = false;
-    };
-    let dungeonDifficulty = localStorage.getItem('dungeonDifficulty') === 'advanced' ? 'advanced' : 'normal';
+  /*****************
+   *  Translations  *
+   *****************/
 
-    // Arena
+  const contentEN = {
+    advanced: "Advanced",
+    arena: "Arena",
+    circusTurma: "Circus Turma",
+    difficulty: "Difficulty",
+    dungeon: "Dungeon",
+    eventExpedition: "Event Expedition",
+    expedition: "Expedition",
+    highest: "Highest",
+    in: "In",
+    lastUsed: "Last Used",
+    location: "Location",
+    lowest: "Lowest",
+    nextAction: "Next action",
+    no: "No",
+    normal: "Normal",
+    opponent: "Opponent",
+    opponentLevel: "Opponent Level",
+    quests: "Quests",
+    random: "Random",
+    settings: "Settings",
+    soon: "Soon...",
+    type: "Type",
+    yes: "Yes",
+  };
 
-    let doArena = true;
-    if (localStorage.getItem('doArena')) {
-        doArena = localStorage.getItem('doArena') === "true" ? true : false;
-    };
-    if (player.level < 2) {
-        doArena = false;
-    };
-    let arenaOpponentLevel = "min"
-    if (localStorage.getItem('arenaOpponentLevel')) {
-        arenaOpponentLevel = localStorage.getItem('arenaOpponentLevel');
-    };
+  const contentPL = {
+    advanced: "Zaawansowane",
+    arena: "Arena",
+    circusTurma: "Circus Turma",
+    difficulty: "Trudność",
+    dungeon: "Lochy",
+    eventExpedition: "Wyprawa Eventowa",
+    expedition: "Wyprawa",
+    highest: "Najwyższy",
+    in: "Za",
+    lastUsed: "Ostatnio Używana",
+    location: "Lokacja",
+    lowest: "Najniższy",
+    nextAction: "Następna akcja",
+    no: "Nie",
+    normal: "Normalne",
+    opponent: "Przeciwnik",
+    opponentLevel: "Poziom Przeciwnika",
+    quests: "Zadania",
+    random: "Losowy",
+    settings: "Ustawienia",
+    soon: "Wkrótce...",
+    type: "Rodzaj",
+    yes: "Tak",
+  };
 
-    // Circus
+  const contentES = {
+    advanced: "Avanzado",
+    arena: "Arena",
+    circusTurma: "Circus Turma",
+    difficulty: "Dificultad",
+    dungeon: "Mazmorra",
+    eventExpedition: "Expedición de Evento",
+    expedition: "Expedición",
+    highest: "Más alto",
+    in: "En",
+    lastUsed: "Último visitado",
+    location: "Localización",
+    lowest: "Más bajo",
+    nextAction: "Próxima Acción",
+    no: "No",
+    normal: "Normal",
+    opponent: "Oponente",
+    opponentLevel: "Nivel de oponente",
+    quests: "Misiones",
+    random: "Aleatorio",
+    settings: "Configuración",
+    soon: "Próximamente...",
+    type: "Tipo",
+    yes: "Si",
+  };
 
-    let doCircus = true;
-    if (localStorage.getItem('doCircus')){
-        doCircus = localStorage.getItem('doCircus') === "true" ? true : false;
-    };
-    if (player.level < 10) {
-        doCircus = false;
-    };
-    let circusOpponentLevel = "min"
-    if (localStorage.getItem('circusOpponentLevel')) {
-        circusOpponentLevel = localStorage.getItem('circusOpponentLevel');
-    };
+  let content;
 
-    // Event Expedition
+  const language = localStorage.getItem("settings.language");
 
-    let doEventExpedition = true;
-    if (localStorage.getItem('doEventExpedition')) {
-        doEventExpedition = localStorage.getItem('doEventExpedition') === "true" ? true : false;
-    };
-    if (!document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0]){
-        doEventExpedition = false;
-    };
+  switch (language) {
+    case "EN":
+      content = { ...contentEN };
+      break;
+    case "PL":
+      content = { ...contentPL };
+      break;
+    case "ES":
+      content = { ...contentES };
+      break;
+    default:
+      content = { ...contentEN };
+  }
 
-    let eventMonsterId = 0;
-    if (localStorage.getItem('eventMonsterId')) {
-        eventMonsterId = Number(localStorage.getItem('eventMonsterId'));
-    };
+  /****************
+   *   Interface   *
+   ****************/
 
-    let nextEventExpeditionTime = 0;
-    if (localStorage.getItem('nextEventExpeditionTime')) {
-        nextEventExpeditionTime = Number(localStorage.getItem('nextEventExpeditionTime'));
-    };
+  // Set Auto Go Active
+  function setAutoGoActive() {
+    sessionStorage.setItem("autoGoActive", true);
+    document.getElementById("autoGoButton").innerHTML = "STOP";
+    document
+      .getElementById("autoGoButton")
+      .removeEventListener("click", setAutoGoActive);
+    document
+      .getElementById("autoGoButton")
+      .addEventListener("click", setAutoGoInactive);
+    autoGo();
+  }
 
-    let eventPoints = 16;
-    if (localStorage.getItem('eventPoints')) {
-        const savedEventPoints = JSON.parse(localStorage.getItem('eventPoints'));
+  // Set Auto Go Inactive
+  function setAutoGoInactive() {
+    sessionStorage.setItem("autoGoActive", false);
+    document.getElementById("autoGoButton").innerHTML = "Auto GO";
+    document
+      .getElementById("autoGoButton")
+      .addEventListener("click", setAutoGoActive);
+    document
+      .getElementById("autoGoButton")
+      .removeEventListener("click", setAutoGoInactive);
 
-        if (savedEventPoints.date === currentDate) {
-            eventPoints = savedEventPoints.count;
-        };
-    };
+    clearTimeout(setTimeout);
 
-    //Taining
-
-    let dexReq = 0
-    let agiReq = 0
-    let charReq = 0
-
-    /*****************
-    *  Translations  *
-    *****************/
-
-    const contentEN = {
-        advanced: 'Advanced',
-        arena: 'Arena',
-        circusTurma: 'Circus Turma',
-        difficulty: 'Difficulty',
-        dungeon: 'Dungeon',
-        eventExpedition: 'Event Expedition',
-        expedition: 'Expedition',
-        highest: 'Highest',
-        in: 'In',
-        lastUsed: "Last Used",
-        location: 'Location',
-        lowest: 'Lowest',
-        nextAction: 'Next action',
-        no: 'No',
-        normal: 'Normal',
-        opponent: 'Opponent',
-        opponentLevel: 'Opponent Level',
-        quests: 'Quests',
-        random: 'Random',
-        settings: 'Settings',
-        soon: 'Soon...',
-        type: 'Type',
-        yes: 'Yes'
-    }
-
-    const contentPL = {
-        advanced: 'Zaawansowane',
-        arena: 'Arena',
-        circusTurma: 'Circus Turma',
-        difficulty: 'Trudność',
-        dungeon: 'Lochy',
-        eventExpedition: 'Wyprawa Eventowa',
-        expedition: 'Wyprawa',
-        highest: 'Najwyższy',
-        in: 'Za',
-        lastUsed: "Ostatnio Używana",
-        location: 'Lokacja',
-        lowest: 'Najniższy',
-        nextAction: 'Następna akcja',
-        no: 'Nie',
-        normal: 'Normalne',
-        opponent: 'Przeciwnik',
-        opponentLevel: 'Poziom Przeciwnika',
-        quests: 'Zadania',
-        random: 'Losowy',
-        settings: 'Ustawienia',
-        soon: 'Wkrótce...',
-        type: 'Rodzaj',
-        yes: 'Tak'
+    if (document.getElementById("nextActionWindow")) {
+      document.getElementById("nextActionWindow").remove();
     }
 
-    const contentES = {
-        advanced: 'Avanzado',
-        arena: 'Arena',
-        circusTurma: 'Circus Turma',
-        difficulty: 'Dificultad',
-        dungeon: 'Mazmorra',
-        eventExpedition: 'Expedición de Evento',
-        expedition: 'Expedición',
-        highest: 'Más alto',
-        in: 'En',
-        lastUsed: "Último visitado",
-        location: 'Localización',
-        lowest: 'Más bajo',
-        nextAction: 'Próxima Acción',
-        no: 'No',
-        normal: 'Normal',
-        opponent: 'Oponente',
-        opponentLevel: 'Nivel de oponente',
-        quests: 'Misiones',
-        random: 'Aleatorio',
-        settings: 'Configuración',
-        soon: 'Próximamente...',
-        type: 'Tipo',
-        yes: 'Si'
+    if (document.getElementById("lowHealth")) {
+      document.getElementById("lowHealth").remove();
+    }
+  }
+
+  // Open Settings
+  function openSettings() {
+    function closeSettings() {
+      document.getElementById("settingsWindow").remove();
+      document.getElementById("overlayBack").remove();
     }
 
-    let content;
-
-    const language = localStorage.getItem('settings.language')
-
-    switch (language) {
-        case 'EN':
-            content = { ...contentEN }
-            break;
-        case 'PL':
-            content = { ...contentPL }
-            break;
-        case 'ES':
-            content = { ...contentES }
-            break;
-        default:
-            content = { ...contentEN }
-    }
-
-    /****************
-    *   Interface   *
-    ****************/
-
-    // Set Auto Go Active
-    function setAutoGoActive() {
-        sessionStorage.setItem('autoGoActive', true);
-        document.getElementById("autoGoButton").innerHTML = 'STOP'
-        document.getElementById("autoGoButton").removeEventListener ("click", setAutoGoActive);
-        document.getElementById("autoGoButton").addEventListener ("click", setAutoGoInactive);
-        autoGo();
-    };
-
-    // Set Auto Go Inactive
-    function setAutoGoInactive() {
-        sessionStorage.setItem('autoGoActive', false);
-        document.getElementById("autoGoButton").innerHTML = 'Auto GO'
-        document.getElementById("autoGoButton").addEventListener ("click", setAutoGoActive);
-        document.getElementById("autoGoButton").removeEventListener ("click", setAutoGoInactive);
-
-        clearTimeout(setTimeout);
-
-        if (document.getElementById("nextActionWindow")) {
-            document.getElementById("nextActionWindow").remove();
-        };
-
-        if (document.getElementById("lowHealth")) {
-            document.getElementById("lowHealth").remove();
-        };
-    };
-
-    // Open Settings
-    function openSettings(){
-
-        function closeSettings() {
-            document.getElementById("settingsWindow").remove();
-            document.getElementById("overlayBack").remove();
-        };
-
-        var settingsWindow = document.createElement("div");
-            settingsWindow.setAttribute("id", "settingsWindow")
-            settingsWindow.innerHTML = `
+    var settingsWindow = document.createElement("div");
+    settingsWindow.setAttribute("id", "settingsWindow");
+    settingsWindow.innerHTML = `
                 <span id="settingsLanguage">
                     <img id="languageEN" src="${assetsUrl}/GB.png">
                     <img id="languagePL" src="${assetsUrl}/PL.png">
@@ -425,330 +458,499 @@
                         </div>
                     </div>
                 </div>`;
-        document.getElementById("header_game").insertBefore(settingsWindow, document.getElementById("header_game").children[0]);
+    document
+      .getElementById("header_game")
+      .insertBefore(
+        settingsWindow,
+        document.getElementById("header_game").children[0]
+      );
 
-        var overlayBack = document.createElement("div");
-            const wrapperHeight = document.getElementById("wrapper_game").clientHeight;
-            overlayBack.setAttribute("id", "overlayBack");
-            overlayBack.setAttribute("style", `height: ${wrapperHeight}px;`);
-            overlayBack.addEventListener ("click", closeSettings);
-        document.getElementsByTagName("body")[0].appendChild(overlayBack);
+    var overlayBack = document.createElement("div");
+    const wrapperHeight = document.getElementById("wrapper_game").clientHeight;
+    overlayBack.setAttribute("id", "overlayBack");
+    overlayBack.setAttribute("style", `height: ${wrapperHeight}px;`);
+    overlayBack.addEventListener("click", closeSettings);
+    document.getElementsByTagName("body")[0].appendChild(overlayBack);
 
-        // Set Language
+    // Set Language
 
-        function setLanguage(language) {
-            localStorage.setItem('settings.language', language)
+    function setLanguage(language) {
+      localStorage.setItem("settings.language", language);
 
-            switch (language) {
-                case 'EN':
-                    content = { ...contentEN }
-                    break;
-                case 'PL':
-                    content = { ...contentPL }
-                    break;
-                case 'ES':
-                    content = { ...contentES }
-                    break;
-                default:
-                    content = { ...contentEN }
-            };
+      switch (language) {
+        case "EN":
+          content = { ...contentEN };
+          break;
+        case "PL":
+          content = { ...contentPL };
+          break;
+        case "ES":
+          content = { ...contentES };
+          break;
+        default:
+          content = { ...contentEN };
+      }
 
-            reloadSettings();
-        };
+      reloadSettings();
+    }
 
-        $("#languageEN").click(function() { setLanguage('EN') });
-        $("#languagePL").click(function() { setLanguage('PL') });
-        $("#languageES").click(function() { setLanguage('ES') });
+    $("#languageEN").click(function () {
+      setLanguage("EN");
+    });
+    $("#languagePL").click(function () {
+      setLanguage("PL");
+    });
+    $("#languageES").click(function () {
+      setLanguage("ES");
+    });
 
-        // Change Settings
+    // Change Settings
 
-        function setDoExpedition(bool) {
-            doExpedition = bool;
-            localStorage.setItem('doExpedition', bool);
-            reloadSettings();
-        };
+    function setDoExpedition(bool) {
+      doExpedition = bool;
+      localStorage.setItem("doExpedition", bool);
+      reloadSettings();
+    }
 
-        $("#do_expedition_true").click(function() { setDoExpedition(true) });
-        $("#do_expedition_false").click(function() { setDoExpedition(false) });
+    $("#do_expedition_true").click(function () {
+      setDoExpedition(true);
+    });
+    $("#do_expedition_false").click(function () {
+      setDoExpedition(false);
+    });
 
-        function setMonster(id) {
-            monsterId = id;
-            localStorage.setItem('monsterId', id);
-            reloadSettings();
-        };
+    function setMonster(id) {
+      monsterId = id;
+      localStorage.setItem("monsterId", id);
+      reloadSettings();
+    }
 
-        $("#set_monster_id_0").click(function() { setMonster('0') });
-        $("#set_monster_id_1").click(function() { setMonster('1') });
-        $("#set_monster_id_2").click(function() { setMonster('2') });
-        $("#set_monster_id_3").click(function() { setMonster('3') });
+    $("#set_monster_id_0").click(function () {
+      setMonster("0");
+    });
+    $("#set_monster_id_1").click(function () {
+      setMonster("1");
+    });
+    $("#set_monster_id_2").click(function () {
+      setMonster("2");
+    });
+    $("#set_monster_id_3").click(function () {
+      setMonster("3");
+    });
 
-        function setDoDungeon(bool) {
-            doDungeon = bool;
-            localStorage.setItem('doDungeon', bool);
-            reloadSettings();
-        };
+    function setDoDungeon(bool) {
+      doDungeon = bool;
+      localStorage.setItem("doDungeon", bool);
+      reloadSettings();
+    }
 
-        $("#do_dungeon_true").click(function() { setDoDungeon(true) });
-        $("#do_dungeon_false").click(function() { setDoDungeon(false) });
+    $("#do_dungeon_true").click(function () {
+      setDoDungeon(true);
+    });
+    $("#do_dungeon_false").click(function () {
+      setDoDungeon(false);
+    });
 
-        function setDungeonDifficulty(difficulty) {
-            dungeonDifficulty = difficulty;
-            localStorage.setItem('dungeonDifficulty', difficulty);
-            reloadSettings();
-        };
+    function setDungeonDifficulty(difficulty) {
+      dungeonDifficulty = difficulty;
+      localStorage.setItem("dungeonDifficulty", difficulty);
+      reloadSettings();
+    }
 
-        $("#set_dungeon_difficulty_normal").click(function() { setDungeonDifficulty("normal") });
-        $("#set_dungeon_difficulty_advanced").click(function() { setDungeonDifficulty("advanced") });
+    $("#set_dungeon_difficulty_normal").click(function () {
+      setDungeonDifficulty("normal");
+    });
+    $("#set_dungeon_difficulty_advanced").click(function () {
+      setDungeonDifficulty("advanced");
+    });
 
-        function setDoArena(bool) {
-            doArena = bool;
-            localStorage.setItem('doArena', bool);
-            reloadSettings();
-        };
+    function setDoArena(bool) {
+      doArena = bool;
+      localStorage.setItem("doArena", bool);
+      reloadSettings();
+    }
 
-        $("#do_arena_true").click(function() { setDoArena(true) });
-        $("#do_arena_false").click(function() { setDoArena(false) });
+    $("#do_arena_true").click(function () {
+      setDoArena(true);
+    });
+    $("#do_arena_false").click(function () {
+      setDoArena(false);
+    });
 
-        function setArenaOpponentLevel(level) {
-            arenaOpponentLevel = level;
-            localStorage.setItem('arenaOpponentLevel', level);
-            reloadSettings();
-        };
+    function setArenaOpponentLevel(level) {
+      arenaOpponentLevel = level;
+      localStorage.setItem("arenaOpponentLevel", level);
+      reloadSettings();
+    }
 
-        $("#set_arena_opponent_level_min").click(function() { setArenaOpponentLevel('min') });
-        $("#set_arena_opponent_level_max").click(function() { setArenaOpponentLevel('max') });
-        $("#set_arena_opponent_level_random").click(function() { setArenaOpponentLevel('random') });
+    $("#set_arena_opponent_level_min").click(function () {
+      setArenaOpponentLevel("min");
+    });
+    $("#set_arena_opponent_level_max").click(function () {
+      setArenaOpponentLevel("max");
+    });
+    $("#set_arena_opponent_level_random").click(function () {
+      setArenaOpponentLevel("random");
+    });
 
-        function setDoCircus(bool) {
-            doCircus = bool;
-            localStorage.setItem('doCircus', bool);
-            reloadSettings();
-        };
+    function setDoCircus(bool) {
+      doCircus = bool;
+      localStorage.setItem("doCircus", bool);
+      reloadSettings();
+    }
 
-        $("#do_circus_true").click(function() { setDoCircus(true) });
-        $("#do_circus_false").click(function() { setDoCircus(false) });
+    $("#do_circus_true").click(function () {
+      setDoCircus(true);
+    });
+    $("#do_circus_false").click(function () {
+      setDoCircus(false);
+    });
 
-        function setCircusOpponentLevel(level) {
-            circusOpponentLevel = level;
-            localStorage.setItem('circusOpponentLevel', level);
-            reloadSettings();
-        };
+    function setCircusOpponentLevel(level) {
+      circusOpponentLevel = level;
+      localStorage.setItem("circusOpponentLevel", level);
+      reloadSettings();
+    }
 
-        $("#set_circus_opponent_level_min").click(function() { setCircusOpponentLevel('min') });
-        $("#set_circus_opponent_level_max").click(function() { setCircusOpponentLevel('max') });
-        $("#set_circus_opponent_level_random").click(function() { setCircusOpponentLevel('random') });
+    $("#set_circus_opponent_level_min").click(function () {
+      setCircusOpponentLevel("min");
+    });
+    $("#set_circus_opponent_level_max").click(function () {
+      setCircusOpponentLevel("max");
+    });
+    $("#set_circus_opponent_level_random").click(function () {
+      setCircusOpponentLevel("random");
+    });
 
-        function setDoQuests(bool) {
-            doQuests = bool;
-            localStorage.setItem('doQuests', bool);
-            reloadSettings();
-        };
+    function setDoQuests(bool) {
+      doQuests = bool;
+      localStorage.setItem("doQuests", bool);
+      reloadSettings();
+    }
 
-        $("#do_quests_true").click(function() { setDoQuests(true) });
-        $("#do_quests_false").click(function() { setDoQuests(false) });
+    $("#do_quests_true").click(function () {
+      setDoQuests(true);
+    });
+    $("#do_quests_false").click(function () {
+      setDoQuests(false);
+    });
 
-        function setQuestTypes(type) {
-            questTypes[type] = !questTypes[type];
-            localStorage.setItem('questTypes', JSON.stringify(questTypes));
-            reloadSettings();
-        };
+    function setQuestTypes(type) {
+      questTypes[type] = !questTypes[type];
+      localStorage.setItem("questTypes", JSON.stringify(questTypes));
+      reloadSettings();
+    }
 
-        $("#do_combat_quests").click(function() { setQuestTypes('combat') });
-        $("#do_arena_quests").click(function() { setQuestTypes('arena') });
-        $("#do_circus_quests").click(function() { setQuestTypes('circus') });
-        $("#do_expedition_quests").click(function() { setQuestTypes('expedition') });
-        $("#do_dungeon_quests").click(function() { setQuestTypes('dungeon') });
-        $("#do_items_quests").click(function() { setQuestTypes('items') });
+    $("#do_combat_quests").click(function () {
+      setQuestTypes("combat");
+    });
+    $("#do_arena_quests").click(function () {
+      setQuestTypes("arena");
+    });
+    $("#do_circus_quests").click(function () {
+      setQuestTypes("circus");
+    });
+    $("#do_expedition_quests").click(function () {
+      setQuestTypes("expedition");
+    });
+    $("#do_dungeon_quests").click(function () {
+      setQuestTypes("dungeon");
+    });
+    $("#do_items_quests").click(function () {
+      setQuestTypes("items");
+    });
 
-        function setDoEventExpedition(bool) {
-            doEventExpedition = bool;
-            localStorage.setItem('doEventExpedition', bool);
-            reloadSettings();
-        };
+    function setDoEventExpedition(bool) {
+      doEventExpedition = bool;
+      localStorage.setItem("doEventExpedition", bool);
+      reloadSettings();
+    }
 
-        $("#do_event_expedition_true").click(function() { setDoEventExpedition(true) });
-        $("#do_event_expedition_false").click(function() { setDoEventExpedition(false) });
+    $("#do_event_expedition_true").click(function () {
+      setDoEventExpedition(true);
+    });
+    $("#do_event_expedition_false").click(function () {
+      setDoEventExpedition(false);
+    });
 
-        function setEventMonster(id) {
-            eventMonsterId = id;
-            localStorage.setItem('eventMonsterId', id);
-            reloadSettings();
-        };
+    function setEventMonster(id) {
+      eventMonsterId = id;
+      localStorage.setItem("eventMonsterId", id);
+      reloadSettings();
+    }
 
-        $("#set_event_monster_id_0").click(function() { setEventMonster('0') });
-        $("#set_event_monster_id_1").click(function() { setEventMonster('1') });
-        $("#set_event_monster_id_2").click(function() { setEventMonster('2') });
-        $("#set_event_monster_id_3").click(function() { setEventMonster('3') });
+    $("#set_event_monster_id_0").click(function () {
+      setEventMonster("0");
+    });
+    $("#set_event_monster_id_1").click(function () {
+      setEventMonster("1");
+    });
+    $("#set_event_monster_id_2").click(function () {
+      setEventMonster("2");
+    });
+    $("#set_event_monster_id_3").click(function () {
+      setEventMonster("3");
+    });
 
-        function reloadSettings() {
-            closeSettings();
-            openSettings();
+    function reloadSettings() {
+      closeSettings();
+      openSettings();
+    }
+
+    function setActiveButtons() {
+      $("#expedition_settings").addClass(doExpedition ? "active" : "inactive");
+      $(`#do_expedition_${doExpedition}`).addClass("active");
+      $(`#set_monster_id_${monsterId}`).addClass("active");
+
+      $("#dungeon_settings").addClass(doDungeon ? "active" : "inactive");
+      $(`#do_dungeon_${doDungeon}`).addClass("active");
+      $(`#set_dungeon_difficulty_${dungeonDifficulty}`).addClass("active");
+
+      $("#arena_settings").addClass(doArena ? "active" : "inactive");
+      $(`#do_arena_${doArena}`).addClass("active");
+      $(`#set_arena_opponent_level_${arenaOpponentLevel}`).addClass("active");
+
+      $("#circus_settings").addClass(doCircus ? "active" : "inactive");
+      $(`#do_circus_${doCircus}`).addClass("active");
+      $(`#set_circus_opponent_level_${circusOpponentLevel}`).addClass("active");
+
+      $("#quests_settings").addClass(doQuests ? "active" : "inactive");
+      $(`#do_quests_${doQuests}`).addClass("active");
+
+      for (const type in questTypes) {
+        if (questTypes[type]) {
+          $(`#do_${type}_quests`).addClass("active");
         }
+      }
 
-        function setActiveButtons() {
-            $('#expedition_settings').addClass(doExpedition ? 'active' : 'inactive');
-            $(`#do_expedition_${doExpedition}`).addClass('active');
-            $(`#set_monster_id_${monsterId}`).addClass('active');
+      $("#event_expedition_settings").addClass(
+        doEventExpedition ? "active" : "inactive"
+      );
+      $(`#do_event_expedition_${doEventExpedition}`).addClass("active");
+      $(`#set_event_monster_id_${eventMonsterId}`).addClass("active");
+    }
 
-            $('#dungeon_settings').addClass(doDungeon ? 'active' : 'inactive');
-            $(`#do_dungeon_${doDungeon}`).addClass('active');
-            $(`#set_dungeon_difficulty_${dungeonDifficulty}`).addClass('active');
+    setActiveButtons();
+  }
 
-            $('#arena_settings').addClass(doArena ? 'active' : 'inactive');
-            $(`#do_arena_${doArena}`).addClass('active');
-            $(`#set_arena_opponent_level_${arenaOpponentLevel}`).addClass('active');
+  // Auto GO button
 
-            $('#circus_settings').addClass(doCircus ? 'active' : 'inactive');
-            $(`#do_circus_${doCircus}`).addClass('active');
-            $(`#set_circus_opponent_level_${circusOpponentLevel}`).addClass('active');
+  var autoGoButton = document.createElement("button");
+  autoGoButton.setAttribute("id", "autoGoButton");
+  autoGoButton.className = "menuitem";
 
-            $('#quests_settings').addClass(doQuests ? 'active' : 'inactive');
-            $(`#do_quests_${doQuests}`).addClass('active');
+  if (autoGoActive == false) {
+    autoGoButton.innerHTML = "Auto GO";
+    autoGoButton.addEventListener("click", setAutoGoActive);
+  } else {
+    autoGoButton.innerHTML = "STOP";
+    autoGoButton.addEventListener("click", setAutoGoInactive);
+  }
 
-            for (const type in questTypes) {
-                if (questTypes[type]) {
-                    $(`#do_${type}_quests`).addClass('active');
-                }
-            }
+  document
+    .getElementById("mainmenu")
+    .insertBefore(
+      autoGoButton,
+      document.getElementById("mainmenu").children[0]
+    );
 
-            $('#event_expedition_settings').addClass(doEventExpedition ? 'active' : 'inactive');
-            $(`#do_event_expedition_${doEventExpedition}`).addClass('active');
-            $(`#set_event_monster_id_${eventMonsterId}`).addClass('active');
-        };
+  // Settings button
 
-        setActiveButtons();
-    };
+  var settingsButton = document.createElement("button");
+  settingsButton.className = "menuitem";
+  settingsButton.innerHTML = `<img src="${assetsUrl}/cog.svg" title="Ustawienia" height="20" width="20" style="filter: invert(83%) sepia(52%) saturate(503%) hue-rotate(85deg) brightness(103%) contrast(101%); z-index: 999;">`;
+  settingsButton.setAttribute(
+    "style",
+    "display: flex; justify-content: center; align-items: center; height: 27px; width: 27px; cursor: pointer; border: none; color: #5dce5d; padding: 0; background-image: url('https://i.imgur.com/jf7BXTX.png')"
+  );
+  settingsButton.addEventListener("click", openSettings);
+  document
+    .getElementById("mainmenu")
+    .insertBefore(
+      settingsButton,
+      document.getElementById("mainmenu").children[1]
+    );
 
-    // Auto GO button
+  /****************
+   *    Helpers    *
+   ****************/
 
-    var autoGoButton = document.createElement("button");
-    autoGoButton.setAttribute("id", "autoGoButton")
-    autoGoButton.className = 'menuitem';
+  function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
 
-    if (autoGoActive == false){
-        autoGoButton.innerHTML = 'Auto GO';
-        autoGoButton.addEventListener ("click", setAutoGoActive);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function getSmallestIntIndex(values) {
+    let index = 0;
+    let minValue = values[0];
+
+    for (let i = 1; i < values.length; i++) {
+      if (values[i] < minValue) {
+        minValue = values[i];
+        index = i;
+      }
+    }
+    return index;
+  }
+
+  function getLargestIntIndex(values) {
+    let index = 0;
+    let maxValue = values[0];
+
+    for (let i = 1; i < values.length; i++) {
+      if (values[i] > maxValue) {
+        maxValue = values[i];
+        index = i;
+      }
+    }
+    return index;
+  }
+
+  function getRandomIntIndex(values) {
+    const index = Math.floor(Math.random() * values.length);
+
+    return index;
+  }
+
+  function convertTimeToMs(t) {
+    const ms =
+      Number(t.split(":")[0]) * 60 * 60 * 1000 +
+      Number(t.split(":")[1]) * 60 * 1000 +
+      Number(t.split(":")[2]) * 1000;
+
+    return ms;
+  }
+
+  /****************
+   *    Auto Go    *
+   ****************/
+
+  // Function to extract training values
+  function extractTrainingValues() {
+    const trainingBox = document.querySelector(".training_box");
+    if (trainingBox) {
+      const trainingValues = trainingBox.querySelectorAll(".training_value");
+      trainingValues.forEach((value, i) => {
+        const content = value.textContent.trim();
+
+        switch (i) {
+          case 0:
+            training.strReq = Number(content);
+            break;
+          case 1:
+            training.dexReq = Number(content);
+            break;
+          case 2:
+            training.agiReq = Number(content);
+            break;
+          case 3:
+            training.constReq = Number(content);
+            break;
+          case 4:
+            training.charReq = Number(content);
+            break;
+          case 5:
+            training.intReq = Number(content);
+            break;
+        }
+      });
+    }
+  }
+
+  function autoGo() {
+    // Variables
+
+    const currentTime = new Date().getTime();
+    const clickDelay = getRandomInt(900, 2400);
+
+    // Claim Daily Reward
+
+    if (document.getElementById("blackoutDialogLoginBonus") !== null) {
+      setTimeout(function () {
+        document
+          .getElementById("blackoutDialogLoginBonus")
+          .getElementsByTagName("input")[0]
+          .click();
+      }, clickDelay);
+    }
+
+    // Close Notifications
+
+    if (
+      document.getElementById("blackoutDialognotification") !== null &&
+      document.getElementById("blackoutDialognotification").isDisplayed()
+    ) {
+      setTimeout(function () {
+        document
+          .getElementById("blackoutDialognotification")
+          .getElementsByTagName("input")[0]
+          .click();
+      }, clickDelay);
+    }
+
+    const lootModal = document.querySelector(".loot-modal");
+
+    if (lootModal) {
+      // If it exists, find all buttons with the class 'loot-button' within it
+      const lootButtons = lootModal.querySelectorAll(".loot-button");
+
+      // Check if there are at least three buttons
+      if (lootButtons.length >= 3) {
+        // Click the third button (index 2 because arrays are 0-indexed)
+        lootButtons[2].click();
+      } else {
+        console.log(
+          "Not enough 'loot-button' elements found within the 'loot-modal'."
+        );
+      }
     } else {
-        autoGoButton.innerHTML = 'STOP';
-        autoGoButton.addEventListener ("click", setAutoGoInactive);
-    };
+      console.log("The 'loot-modal' div does not exist.");
+    }
 
-    document.getElementById("mainmenu").insertBefore(autoGoButton, document.getElementById("mainmenu").children[0]);
+    // Verificar si estamos en la página de entrenamiento
 
-    // Settings button
-
-    var settingsButton = document.createElement("button");
-    settingsButton.className = 'menuitem';
-    settingsButton.innerHTML = `<img src="${assetsUrl}/cog.svg" title="Ustawienia" height="20" width="20" style="filter: invert(83%) sepia(52%) saturate(503%) hue-rotate(85deg) brightness(103%) contrast(101%); z-index: 999;">`;
-    settingsButton.setAttribute("style", "display: flex; justify-content: center; align-items: center; height: 27px; width: 27px; cursor: pointer; border: none; color: #5dce5d; padding: 0; background-image: url('https://i.imgur.com/jf7BXTX.png')" );
-    settingsButton.addEventListener ("click", openSettings);
-    document.getElementById("mainmenu").insertBefore(settingsButton, document.getElementById("mainmenu").children[1]);
-
-    /****************
-    *    Helpers    *
-    ****************/
-
-    function getRandomInt(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    };
-
-    function getSmallestIntIndex(values) {
-        let index = 0;
-        let minValue = values[0];
-
-        for (let i = 1; i < values.length; i++) {
-            if (values[i] < minValue) {
-                minValue = values[i];
-                index = i;
-            }
-        };
-        return index;
-    };
-
-    function getLargestIntIndex(values) {
-        let index = 0;
-        let maxValue = values[0];
-
-        for (let i = 1; i < values.length; i++) {
-            if (values[i] > maxValue) {
-                maxValue = values[i];
-                index = i;
-            }
-        };
-        return index;
-    };
-
-    function getRandomIntIndex(values) {
-        const index = Math.floor(Math.random() * values.length);
-
-        return index;
-    };
-
-    function convertTimeToMs(t) {
-        const ms = Number(t.split(':')[0]) * 60 * 60 * 1000 + Number(t.split(':')[1]) * 60 * 1000 + Number(t.split(':')[2]) * 1000;
-
-        return ms;
-    };
-
-    /****************
-    *    Auto Go    *
-    ****************/
-
-    function autoGo() {
-
-        // Variables
-
-        const currentTime = new Date().getTime();
-        const clickDelay = getRandomInt(900, 2400);
-
-        // Claim Daily Reward
-
-        if (document.getElementById("blackoutDialogLoginBonus") !== null) {
-            setTimeout(function(){
-                document.getElementById("blackoutDialogLoginBonus").getElementsByTagName("input")[0].click();
-            }, clickDelay);
-        };
-
-        // Close Notifications
-
-        if (document.getElementById("blackoutDialognotification") !== null && document.getElementById("blackoutDialognotification").isDisplayed()) {
-            setTimeout(function(){
-                document.getElementById("blackoutDialognotification").getElementsByTagName("input")[0].click();
-            }, clickDelay);
-        };
-
-        const lootModal = document.querySelector('.loot-modal');
-
-        if (lootModal) {
-            // If it exists, find all buttons with the class 'loot-button' within it
-            const lootButtons = lootModal.querySelectorAll('.loot-button');
-
-            // Check if there are at least three buttons
-            if (lootButtons.length >= 3) {
-                // Click the third button (index 2 because arrays are 0-indexed)
-                lootButtons[2].click();
-            } else {
-                console.log("Not enough 'loot-button' elements found within the 'loot-modal'.");
-            }
-        } else {
-            console.log("The 'loot-modal' div does not exist.");
+    if (doTraining) {
+      const isPageTraining = window.location.href.includes(
+        "index.php?mod=training&sh=9af516f98e9f93ffde5056b12c962763"
+      );
+      if (!isPageTraining) {
+        if (
+          !training.dexReq ||
+          !training.agiReq ||
+          !training.charReq ||
+          !training.strReq ||
+          !training.constReq ||
+          !training.intReq
+        ) {
+          const trainingLink = document.querySelector(
+            'a[href="index.php?mod=training&sh=9af516f98e9f93ffde5056b12c962763"]'
+          );
+          if (trainingLink) {
+            trainingLink.click();
+          }
         }
+      } else {
+        extractTrainingValues();
+      }
+    }
+    console.log(training);
 
-        /***************
-        *   Use Food   *
-        ***************/
+    /***************
+     *   Use Food   *
+     ***************/
 
-        if (player.hp < 10) {
-            console.log("Low health");
+    if (player.hp < 10) {
+      console.log("Low health");
 
-            var lowHealthAlert = document.createElement("div");
+      var lowHealthAlert = document.createElement("div");
 
-            function showLowHealthAlert() {
-                lowHealthAlert.setAttribute("id", "lowHealth")
-                lowHealthAlert.setAttribute("style", `
+      function showLowHealthAlert() {
+        lowHealthAlert.setAttribute("id", "lowHealth");
+        lowHealthAlert.setAttribute(
+          "style",
+          `
                     display: block;
                     position: absolute;
                     top: 120px;
@@ -762,422 +964,545 @@
                     border-left: 10px solid #ea1414;
                     border-right: 10px solid #ea1414;
                     z-index: 999;
-                `);
-                lowHealthAlert.innerHTML = '<span>Low Health!</span>';
-                document.getElementById("header_game").insertBefore(lowHealthAlert, document.getElementById("header_game").children[0]);
-            };
-            showLowHealthAlert();
+                `
+        );
+        lowHealthAlert.innerHTML = "<span>Low Health!</span>";
+        document
+          .getElementById("header_game")
+          .insertBefore(
+            lowHealthAlert,
+            document.getElementById("header_game").children[0]
+          );
+      }
+      showLowHealthAlert();
 
-            // @TODO
+      // @TODO
+    } else if (doQuests === true && nextQuestTime < currentTime) {
+      /****************
+       * Handle Quests *
+       ****************/
+      function completeQuests() {
+        const inPanteonPage = $("body").first().attr("id") === "questsPage";
+
+        if (!inPanteonPage) {
+          $("#mainmenu a.menuitem")[1].click();
+        } else {
+          const completedQuests = $(
+            "#content .contentboard_slot a.quest_slot_button_finish"
+          );
+          console.log(completedQuests);
+
+          if (completedQuests.length) {
+            completedQuests[0].click();
+          } else {
+            repeatQuests();
+          }
         }
+      }
 
-        /****************
-        * Handle Quests *
-        ****************/
+      function repeatQuests() {
+        const failedQuests = $(
+          "#content .contentboard_slot a.quest_slot_button_restart"
+        );
 
-        else if (doQuests === true && nextQuestTime < currentTime) {
-            function completeQuests() {
-                const inPanteonPage = $("body").first().attr("id") === "questsPage";
+        if (failedQuests.length) {
+          failedQuests[0].click();
+        } else {
+          takeQuest();
+        }
+      }
 
-                if (!inPanteonPage) {
-                    $("#mainmenu a.menuitem")[1].click();
-                } else {
-                    const completedQuests = $("#content .contentboard_slot a.quest_slot_button_finish");
-                    console.log(completedQuests)
+      function takeQuest() {
+        const canTakeQuest = $(
+          "#content .contentboard_slot a.quest_slot_button_accept"
+        );
+        console.log(canTakeQuest);
 
-                    if (completedQuests.length) {
-                        completedQuests[0].click();
-                    } else {
-                        repeatQuests();
-                    }
-                }
-            };
-
-            function repeatQuests() {
-                const failedQuests = $("#content .contentboard_slot a.quest_slot_button_restart");
-
-                if (failedQuests.length) {
-                    failedQuests[0].click();
-                } else {
-                    takeQuest();
-                }
+        if (canTakeQuest.length) {
+          function getIconName(url) {
+            if (url.includes("icon_grouparena_inactive")) {
+              return "circus";
             }
 
-            function takeQuest() {
-                const canTakeQuest = $("#content .contentboard_slot a.quest_slot_button_accept");
-                console.log(canTakeQuest)
-
-                if (canTakeQuest.length) {
-                    function getIconName(url) {
-                        if (url.includes('icon_grouparena_inactive')) {
-                            return 'circus';
-                        }
-
-                        if (url.includes('icon_dungeon_inactive')) {
-                            return 'dungeon';
-                        }
-
-                        if (url.includes('icon_combat_inactive')) {
-                            return 'combat';
-                        }
-
-                        if (url.includes('icon_items_inactive')) {
-                            return 'items';
-                        }
-
-                        if (url.includes('icon_arena_inactive')) {
-                            return 'arena';
-                        }
-
-                        if (url.includes('icon_expedition_inactive')) {
-                            return 'expedition';
-                        }
-                        return null;
-                    }
-
-                    const availableQuests = $("#content .contentboard_slot_inactive");
-
-                    for (const quest of availableQuests) {
-                        let icon = getIconName(quest.getElementsByClassName("quest_slot_icon")[0].style.backgroundImage);
-
-                        if (!icon) {
-                            console.log('No quest was found')
-                        };
-
-                        if (questTypes[icon]) {
-                            return quest.getElementsByClassName("quest_slot_button_accept")[0].click();
-                        };
-                    }
-
-                    $("#quest_footer_reroll input").first().click()
-                }
-
-                checkNextQuestTime();
+            if (url.includes("icon_dungeon_inactive")) {
+              return "dungeon";
             }
 
-            function checkNextQuestTime() {
-                const isTimer = $("#quest_header_cooldown")
-
-                if (isTimer.length) {
-                    const nextQuestIn = Number($("#quest_header_cooldown b span").attr("data-ticker-time-left"))
-
-                    nextQuestTime = currentTime + nextQuestIn
-                    localStorage.setItem('nextQuestTime', nextQuestTime)
-                } else {
-                    nextQuestTime = currentTime + 300000;
-                    localStorage.setItem('nextQuestTime', nextQuestTime)
-                }
-
-                autoGo();
+            if (url.includes("icon_combat_inactive")) {
+              return "combat";
             }
 
-            setTimeout(function(){
-                completeQuests();
-            }, clickDelay);
+            if (url.includes("icon_items_inactive")) {
+              return "items";
+            }
+
+            if (url.includes("icon_arena_inactive")) {
+              return "arena";
+            }
+
+            if (url.includes("icon_expedition_inactive")) {
+              return "expedition";
+            }
+            return null;
+          }
+
+          const availableQuests = $("#content .contentboard_slot_inactive");
+
+          for (const quest of availableQuests) {
+            let icon = getIconName(
+              quest.getElementsByClassName("quest_slot_icon")[0].style
+                .backgroundImage
+            );
+
+            if (!icon) {
+              console.log("No quest was found");
+            }
+
+            if (questTypes[icon]) {
+              return quest
+                .getElementsByClassName("quest_slot_button_accept")[0]
+                .click();
+            }
+          }
+
+          $("#quest_footer_reroll input").first().click();
         }
 
-        /****************
-        * Go Expedition *
-        ****************/
+        checkNextQuestTime();
+      }
 
-        else if (doExpedition === true && document.getElementById("cooldown_bar_fill_expedition").classList.contains("cooldown_bar_fill_ready") === true) {
-            function goExpedition() {
-                const inExpeditionPage = $("body").first().attr("id") === "locationPage";
-                const inEventExpeditionPage = document.getElementById("content").getElementsByTagName('img')[1].getAttribute('src') === 'img/ui/expedition_points2.png';
+      function checkNextQuestTime() {
+        const isTimer = $("#quest_header_cooldown");
 
-                if (!inExpeditionPage || inEventExpeditionPage) {
-                    document.getElementsByClassName("cooldown_bar_link")[0].click();
-                } else {
-                    document.getElementsByClassName("expedition_button")[monsterId].click();
-                };
-            };
+        if (isTimer.length) {
+          const nextQuestIn = Number(
+            $("#quest_header_cooldown b span").attr("data-ticker-time-left")
+          );
 
-            setTimeout(function(){
-                goExpedition();
-            }, clickDelay);
-
+          nextQuestTime = currentTime + nextQuestIn;
+          localStorage.setItem("nextQuestTime", nextQuestTime);
+        } else {
+          nextQuestTime = currentTime + 300000;
+          localStorage.setItem("nextQuestTime", nextQuestTime);
         }
 
-        /**************
-        * Go Dungeon  *
-        **************/
+        autoGo();
+      }
 
-        else if (doDungeon === true && document.getElementById("cooldown_bar_fill_dungeon").classList.contains("cooldown_bar_fill_ready") === true) {
-            function goDungeon() {
-                const inDungeonPage = $("body").first().attr("id") === "dungeonPage";
+      setTimeout(function () {
+        completeQuests();
+      }, clickDelay);
+    } else if (
+      /****************
+       * Go Expedition *
+       ****************/
+      doExpedition === true &&
+      document
+        .getElementById("cooldown_bar_fill_expedition")
+        .classList.contains("cooldown_bar_fill_ready") === true
+    ) {
+      function goExpedition() {
+        const inExpeditionPage =
+          $("body").first().attr("id") === "locationPage";
+        const inEventExpeditionPage =
+          document
+            .getElementById("content")
+            .getElementsByTagName("img")[1]
+            .getAttribute("src") === "img/ui/expedition_points2.png";
 
-                if (!inDungeonPage) {
-                    document.getElementsByClassName("cooldown_bar_link")[1].click();
-                } else {
-                    const inSelectDifficultyPage = !document.getElementById("content").getElementsByTagName("area")[0];
+        if (!inExpeditionPage || inEventExpeditionPage) {
+          document.getElementsByClassName("cooldown_bar_link")[0].click();
+        } else {
+          document
+            .getElementsByClassName("expedition_button")
+            [monsterId].click();
+        }
+      }
 
-                    if (inSelectDifficultyPage) {
-                        if (dungeonDifficulty === "advanced") {
-                            document.getElementById("content").getElementsByClassName("button1")[1].click();
-                        } else {
-                            document.getElementById("content").getElementsByClassName("button1")[0].click();
-                        }
-                    } else {
-                        document.getElementById("content").getElementsByTagName("area")[0].click();
-                    };
-                };
-            };
+      setTimeout(function () {
+        goExpedition();
+      }, clickDelay);
+    } else if (
+      /**************
+       * Go Dungeon  *
+       **************/
+      doDungeon === true &&
+      document
+        .getElementById("cooldown_bar_fill_dungeon")
+        .classList.contains("cooldown_bar_fill_ready") === true
+    ) {
+      function goDungeon() {
+        const inDungeonPage = $("body").first().attr("id") === "dungeonPage";
 
-            setTimeout(function(){
-                goDungeon();
-            }, clickDelay);
+        if (!inDungeonPage) {
+          document.getElementsByClassName("cooldown_bar_link")[1].click();
+        } else {
+          const inSelectDifficultyPage = !document
+            .getElementById("content")
+            .getElementsByTagName("area")[0];
+
+          if (inSelectDifficultyPage) {
+            if (dungeonDifficulty === "advanced") {
+              document
+                .getElementById("content")
+                .getElementsByClassName("button1")[1]
+                .click();
+            } else {
+              document
+                .getElementById("content")
+                .getElementsByClassName("button1")[0]
+                .click();
+            }
+          } else {
+            document
+              .getElementById("content")
+              .getElementsByTagName("area")[0]
+              .click();
+          }
+        }
+      }
+
+      setTimeout(function () {
+        goDungeon();
+      }, clickDelay);
+    } else if (
+      /************************
+       * Go Arena Provinciarum *
+       ************************/
+      doArena === true &&
+      document
+        .getElementById("cooldown_bar_fill_arena")
+        .classList.contains("cooldown_bar_fill_ready") === true
+    ) {
+      function goArena() {
+        const inArenaPage =
+          document.getElementsByTagName("body")[0].id === "arenaPage";
+
+        if (!inArenaPage && player.level < 10) {
+          document.getElementsByClassName("cooldown_bar_link")[1].click();
+        } else if (!inArenaPage) {
+          document.getElementsByClassName("cooldown_bar_link")[2].click();
+        } else {
+          const inArenaProvPage = document
+            .getElementById("mainnav")
+            .getElementsByTagName("td")[1]
+            .firstChild.hasClass("awesome-tabs current");
+
+          if (!inArenaProvPage) {
+            document
+              .getElementById("mainnav")
+              .getElementsByTagName("td")[1]
+              .firstElementChild.click();
+          } else {
+            const levels = new Array();
+            levels[0] = Number(
+              document.getElementById("own2").getElementsByTagName("td")[1]
+                .firstChild.nodeValue
+            );
+            levels[1] = Number(
+              document.getElementById("own2").getElementsByTagName("td")[5]
+                .firstChild.nodeValue
+            );
+            levels[2] = Number(
+              document.getElementById("own2").getElementsByTagName("td")[9]
+                .firstChild.nodeValue
+            );
+            levels[3] = Number(
+              document.getElementById("own2").getElementsByTagName("td")[13]
+                .firstChild.nodeValue
+            );
+            levels[4] = Number(
+              document.getElementById("own2").getElementsByTagName("td")[17]
+                .firstChild.nodeValue
+            );
+
+            let opponentIndex;
+
+            if (arenaOpponentLevel === "min") {
+              opponentIndex = getSmallestIntIndex(levels);
+            } else if (arenaOpponentLevel === "max") {
+              opponentIndex = getLargestIntIndex(levels);
+            } else {
+              opponentIndex = getRandomIntIndex(levels);
+            }
+
+            document.getElementsByClassName("attack")[opponentIndex].click();
+          }
+        }
+      }
+
+      setTimeout(function () {
+        goArena();
+      }, clickDelay + 600);
+    } else if (
+      /*************************
+       * Go Circus Provinciarum *
+       *************************/
+      doCircus === true &&
+      document
+        .getElementById("cooldown_bar_fill_ct")
+        .classList.contains("cooldown_bar_fill_ready") === true
+    ) {
+      function goCircus() {
+        const inArenaPage =
+          document.getElementsByTagName("body")[0].id === "arenaPage";
+
+        if (!inArenaPage) {
+          document.getElementsByClassName("cooldown_bar_link")[3].click();
+        } else {
+          const inCircusProvPage = document
+            .getElementById("mainnav")
+            .getElementsByTagName("td")[3]
+            .firstChild.hasClass("awesome-tabs current");
+
+          if (!inCircusProvPage) {
+            document
+              .getElementById("mainnav")
+              .getElementsByTagName("td")[3]
+              .firstElementChild.click();
+          } else {
+            const levels = new Array();
+            levels[0] = Number(
+              document.getElementById("own3").getElementsByTagName("td")[1]
+                .firstChild.nodeValue
+            );
+            levels[1] = Number(
+              document.getElementById("own3").getElementsByTagName("td")[5]
+                .firstChild.nodeValue
+            );
+            levels[2] = Number(
+              document.getElementById("own3").getElementsByTagName("td")[9]
+                .firstChild.nodeValue
+            );
+            levels[3] = Number(
+              document.getElementById("own3").getElementsByTagName("td")[13]
+                .firstChild.nodeValue
+            );
+            levels[4] = Number(
+              document.getElementById("own3").getElementsByTagName("td")[17]
+                .firstChild.nodeValue
+            );
+
+            let opponentIndex;
+
+            if (circusOpponentLevel === "min") {
+              opponentIndex = getSmallestIntIndex(levels);
+            } else if (circusOpponentLevel === "max") {
+              opponentIndex = getLargestIntIndex(levels);
+            } else {
+              opponentIndex = getRandomIntIndex(levels);
+            }
+
+            document.getElementsByClassName("attack")[opponentIndex].click();
+
+            // added if reached 5 figths
+            setTimeout(function () {
+              const retry = document.getElementById("linkbod");
+              if (retry) retry.click();
+            }, clickDelay + 100);
+          }
+        }
+      }
+
+      setTimeout(function () {
+        goCircus();
+      }, clickDelay + 600);
+    } else if (
+      /************************
+       *  Go Event Expedition  *
+       ************************/
+      doEventExpedition === true &&
+      nextEventExpeditionTime < currentTime &&
+      eventPoints > 0
+    ) {
+      function goEventExpedition() {
+        const inEventExpeditionPage = document
+          .getElementById("submenu2")
+          .getElementsByClassName("menuitem active glow")[0];
+
+        if (!inEventExpeditionPage) {
+          document
+            .getElementById("submenu2")
+            .getElementsByClassName("menuitem glow")[0]
+            .click();
+        } else {
+          eventPoints = document
+            .getElementById("content")
+            .getElementsByClassName("section-header")[0]
+            .getElementsByTagName("p")[1]
+            .firstChild.nodeValue.replace(/[^0-9]/gi, "");
+          localStorage.setItem(
+            "eventPoints",
+            JSON.stringify({ count: eventPoints, date: currentDate })
+          );
+
+          const isTimer = $("#content .ticker").first();
+
+          if (isTimer.length) {
+            nextEventExpeditionTime =
+              currentTime +
+              Number(
+                $("#content .ticker").first().attr("data-ticker-time-left")
+              );
+            localStorage.setItem(
+              "nextEventExpeditionTime",
+              nextEventExpeditionTime
+            );
+
+            location.reload();
+          } else if (eventPoints == 0) {
+            location.reload();
+          } else if (eventPoints == 1 && eventMonsterId == 3) {
+            localStorage.setItem(
+              "eventPoints",
+              JSON.stringify({ count: 0, date: currentDate })
+            );
+
+            document.getElementsByClassName("expedition_button")[2].click();
+          } else {
+            if (eventMonsterId == 3) {
+              localStorage.setItem(
+                "eventPoints",
+                JSON.stringify({ count: eventPoints - 2, date: currentDate })
+              );
+            } else {
+              localStorage.setItem(
+                "eventPoints",
+                JSON.stringify({ count: eventPoints - 1, date: currentDate })
+              );
+            }
+
+            nextEventExpeditionTime = currentTime + 303000;
+            localStorage.setItem(
+              "nextEventExpeditionTime",
+              nextEventExpeditionTime
+            );
+
+            document
+              .getElementsByClassName("expedition_button")
+              [eventMonsterId].click();
+          }
+        }
+      }
+
+      setTimeout(function () {
+        goEventExpedition();
+      }, clickDelay);
+    } else {
+      /***********************
+       * Wait for Next Action *
+       ***********************/
+      /******************
+       *    Fast Mode    *
+       ******************/
+
+      if (safeMode === false) {
+        const actions = [];
+
+        if (doExpedition === true) {
+          const timeTo = convertTimeToMs(
+            document.getElementById("cooldown_bar_text_expedition").innerText
+          );
+
+          actions.push({
+            name: "expedition",
+            time: timeTo,
+            index: 0,
+          });
         }
 
-        /************************
-        * Go Arena Provinciarum *
-        ************************/
+        if (doDungeon === true) {
+          const timeTo = convertTimeToMs(
+            document.getElementById("cooldown_bar_text_dungeon").innerText
+          );
 
-        else if (doArena === true && document.getElementById("cooldown_bar_fill_arena").classList.contains("cooldown_bar_fill_ready") === true) {
-            function goArena() {
-                const inArenaPage = document.getElementsByTagName("body")[0].id === "arenaPage";
-
-                if (!inArenaPage && player.level < 10) {
-                    document.getElementsByClassName("cooldown_bar_link")[1].click();
-                } else if (!inArenaPage) {
-                    document.getElementsByClassName("cooldown_bar_link")[2].click();
-                } else {
-                    const inArenaProvPage = document.getElementById("mainnav").getElementsByTagName("td")[1].firstChild.hasClass("awesome-tabs current");
-
-                    if (!inArenaProvPage) {
-                        document.getElementById("mainnav").getElementsByTagName("td")[1].firstElementChild.click();
-                    } else {
-                        const levels = new Array();
-                        levels[0] = Number(document.getElementById("own2").getElementsByTagName("td")[1].firstChild.nodeValue)
-                        levels[1] = Number(document.getElementById("own2").getElementsByTagName("td")[5].firstChild.nodeValue)
-                        levels[2] = Number(document.getElementById("own2").getElementsByTagName("td")[9].firstChild.nodeValue)
-                        levels[3] = Number(document.getElementById("own2").getElementsByTagName("td")[13].firstChild.nodeValue)
-                        levels[4] = Number(document.getElementById("own2").getElementsByTagName("td")[17].firstChild.nodeValue)
-
-                        let opponentIndex;
-
-                        if (arenaOpponentLevel === "min") {
-                            opponentIndex = getSmallestIntIndex(levels)
-                        } else if (arenaOpponentLevel === "max") {
-                            opponentIndex = getLargestIntIndex(levels)
-                        } else {
-                            opponentIndex = getRandomIntIndex(levels)
-                        }
-
-                        document.getElementsByClassName("attack")[opponentIndex].click();
-                    }
-                }
-            };
-
-            setTimeout(function(){
-                goArena();
-            }, clickDelay + 600);
-
+          actions.push({
+            name: "dungeon",
+            time: timeTo,
+            index: 1,
+          });
         }
 
-        /*************************
-        * Go Circus Provinciarum *
-        *************************/
+        if (doArena === true) {
+          const timeTo = convertTimeToMs(
+            document.getElementById("cooldown_bar_text_arena").innerText
+          );
 
-        else if (doCircus === true && document.getElementById("cooldown_bar_fill_ct").classList.contains("cooldown_bar_fill_ready") === true) {
-            function goCircus() {
-                const inArenaPage = document.getElementsByTagName("body")[0].id === "arenaPage";
-
-                if (!inArenaPage) {
-                    document.getElementsByClassName("cooldown_bar_link")[3].click();
-                } else {
-                    const inCircusProvPage = document.getElementById("mainnav").getElementsByTagName("td")[3].firstChild.hasClass("awesome-tabs current");
-
-                    if (!inCircusProvPage) {
-                        document.getElementById("mainnav").getElementsByTagName("td")[3].firstElementChild.click();
-                    } else {
-                        const levels = new Array();
-                        levels[0] = Number(document.getElementById("own3").getElementsByTagName("td")[1].firstChild.nodeValue)
-                        levels[1] = Number(document.getElementById("own3").getElementsByTagName("td")[5].firstChild.nodeValue)
-                        levels[2] = Number(document.getElementById("own3").getElementsByTagName("td")[9].firstChild.nodeValue)
-                        levels[3] = Number(document.getElementById("own3").getElementsByTagName("td")[13].firstChild.nodeValue)
-                        levels[4] = Number(document.getElementById("own3").getElementsByTagName("td")[17].firstChild.nodeValue)
-
-                        let opponentIndex;
-
-                        if (circusOpponentLevel === "min") {
-                            opponentIndex = getSmallestIntIndex(levels)
-                        } else if (circusOpponentLevel === "max") {
-                            opponentIndex = getLargestIntIndex(levels)
-                        } else {
-                            opponentIndex = getRandomIntIndex(levels)
-                        }
-
-                        document.getElementsByClassName("attack")[opponentIndex].click();
-
-                        // added if reached 5 figths
-                        setTimeout(function(){
-                            const retry = document.getElementById("linkbod")
-                            if(retry)retry.click()
-                        }, clickDelay + 100)
-                    };
-                };
-            };
-
-            setTimeout(function(){
-                goCircus();
-            }, clickDelay + 600);
-
+          actions.push({
+            name: "arena",
+            time: timeTo,
+            index: 2,
+          });
         }
 
-        /************************
-        *  Go Event Expedition  *
-        ************************/
+        if (doCircus === true) {
+          const timeTo = convertTimeToMs(
+            document.getElementById("cooldown_bar_text_ct").innerText
+          );
 
-        else if (doEventExpedition === true && nextEventExpeditionTime < currentTime && eventPoints > 0) {
-            function goEventExpedition() {
-                const inEventExpeditionPage = document.getElementById("submenu2").getElementsByClassName("menuitem active glow")[0];
-
-                if (!inEventExpeditionPage) {
-                    document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0].click();
-                } else {
-                    eventPoints = document.getElementById("content").getElementsByClassName("section-header")[0].getElementsByTagName("p")[1].firstChild.nodeValue.replace(/[^0-9]/gi, '')
-                    localStorage.setItem('eventPoints', JSON.stringify({count: eventPoints, date: currentDate}));
-
-                    const isTimer = $('#content .ticker').first()
-
-                    if (isTimer.length) {
-                        nextEventExpeditionTime = currentTime + Number($('#content .ticker').first().attr('data-ticker-time-left'));
-                        localStorage.setItem('nextEventExpeditionTime', nextEventExpeditionTime);
-
-                        location.reload();
-                    } else if (eventPoints == 0) {
-                        location.reload();
-                    } else if (eventPoints == 1 && eventMonsterId == 3) {
-                        localStorage.setItem('eventPoints', JSON.stringify({count: 0, date: currentDate}));
-
-                        document.getElementsByClassName("expedition_button")[2].click();
-                    } else {
-                        if (eventMonsterId == 3) {
-                            localStorage.setItem('eventPoints', JSON.stringify({count: eventPoints - 2, date: currentDate}));
-                        } else {
-                            localStorage.setItem('eventPoints', JSON.stringify({count: eventPoints - 1, date: currentDate}));
-                        }
-
-                        nextEventExpeditionTime = currentTime + 303000;
-                        localStorage.setItem('nextEventExpeditionTime', nextEventExpeditionTime);
-
-                        document.getElementsByClassName("expedition_button")[eventMonsterId].click();
-                    }
-                }
-            };
-
-            setTimeout(function(){
-                goEventExpedition();
-            }, clickDelay);
-
+          actions.push({
+            name: "circusTurma",
+            time: timeTo,
+            index: 3,
+          });
         }
 
-        /***********************
-        * Wait for Next Action *
-        ***********************/
+        if (doEventExpedition === true && eventPoints > 0) {
+          const timeTo =
+            localStorage.getItem("nextEventExpeditionTime") - currentTime;
 
-        else {
+          actions.push({
+            name: "eventExpedition",
+            time: timeTo,
+            index: 4,
+          });
+        }
 
-            /******************
-            *    Fast Mode    *
-            ******************/
+        function getNextAction(actions) {
+          let index = 0;
+          let minValue = actions[0].time;
 
-            if (safeMode === false) {
-                const actions = [];
+          for (let i = 1; i < actions.length; i++) {
+            if (actions[i].time < minValue) {
+              minValue = actions[i].time;
+              index = i;
+            }
+          }
+          return actions[index];
+        }
 
-                if (doExpedition === true) {
-                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_expedition").innerText);
+        const nextAction = getNextAction(actions);
 
-                    actions.push({
-                        name: 'expedition',
-                        time: timeTo,
-                        index: 0
-                    });
-                };
+        // @TODO fix nextAction if !actions.length
 
-                if (doDungeon === true) {
-                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_dungeon").innerText);
+        function formatTime(timeInMs) {
+          if (timeInMs < 1000) {
+            return "0:00:00";
+          }
 
-                    actions.push({
-                        name: 'dungeon',
-                        time: timeTo,
-                        index: 1
-                    });
-                };
+          let timeInSecs = timeInMs / 1000;
+          timeInSecs = Math.round(timeInSecs);
+          let secs = timeInSecs % 60;
+          if (secs < 10) {
+            secs = "0" + secs;
+          }
+          timeInSecs = (timeInSecs - secs) / 60;
+          let mins = timeInSecs % 60;
+          if (mins < 10) {
+            mins = "0" + mins;
+          }
+          let hrs = (timeInSecs - mins) / 60;
 
-                if (doArena === true) {
-                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_arena").innerText);
+          return hrs + ":" + mins + ":" + secs;
+        }
 
-                    actions.push({
-                        name: 'arena',
-                        time: timeTo,
-                        index: 2,
-                    });
-                };
+        var nextActionWindow = document.createElement("div");
 
-                if (doCircus === true) {
-                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_ct").innerText);
-
-                    actions.push({
-                        name: 'circusTurma',
-                        time: timeTo,
-                        index: 3,
-                    });
-                };
-
-                if (doEventExpedition === true && eventPoints > 0) {
-                    const timeTo = localStorage.getItem('nextEventExpeditionTime') - currentTime;
-
-                    actions.push({
-                        name: 'eventExpedition',
-                        time: timeTo,
-                        index: 4,
-                    });
-                };
-
-                function getNextAction(actions) {
-                    let index = 0;
-                    let minValue = actions[0].time;
-
-                    for (let i = 1; i < actions.length; i++) {
-                        if (actions[i].time < minValue) {
-                            minValue = actions[i].time;
-                            index = i;
-                        }
-                    };
-                    return actions[index]
-                };
-
-                const nextAction = getNextAction(actions);
-
-                // @TODO fix nextAction if !actions.length
-
-                function formatTime(timeInMs) {
-                    if (timeInMs < 1000) {
-                        return "0:00:00"
-                    };
-
-                    let timeInSecs = timeInMs / 1000;
-                    timeInSecs = Math.round(timeInSecs);
-                    let secs = timeInSecs % 60;
-                    if (secs < 10) {
-                        secs = "0" + secs;
-                    };
-                    timeInSecs = (timeInSecs - secs) / 60;
-                    let mins = timeInSecs % 60;
-                    if (mins < 10) {
-                        mins = "0" + mins;
-                    };
-                    let hrs = (timeInSecs - mins) / 60;
-
-                    return hrs + ':' + mins + ':' + secs;
-                };
-
-                var nextActionWindow = document.createElement("div");
-
-                function showNextActionWindow() {
-                    nextActionWindow.setAttribute("id", "nextActionWindow")
-                    nextActionWindow.setAttribute("style", `
+        function showNextActionWindow() {
+          nextActionWindow.setAttribute("id", "nextActionWindow");
+          nextActionWindow.setAttribute(
+            "style",
+            `
                         display: block;
                         position: absolute;
                         top: 120px;
@@ -1192,53 +1517,63 @@
                         border-left: 10px solid #58ffbb;
                         border-right: 10px solid #58ffbb;
                         z-index: 999;
-                    `);
-                    nextActionWindow.innerHTML = `
-                        <span style="color: #fff;">${content.nextAction}: </span>
+                    `
+          );
+          nextActionWindow.innerHTML = `
+                        <span style="color: #fff;">${
+                          content.nextAction
+                        }: </span>
                         <span>${content[nextAction.name]}</span></br>
                         <span style="color: #fff;">${content.in}: </span>
                         <span>${formatTime(nextAction.time)}</span>`;
-                    document.getElementById("header_game").insertBefore(nextActionWindow, document.getElementById("header_game").children[0]);
-                };
-                showNextActionWindow();
+          document
+            .getElementById("header_game")
+            .insertBefore(
+              nextActionWindow,
+              document.getElementById("header_game").children[0]
+            );
+        }
+        showNextActionWindow();
 
-                let nextActionCounter;
+        let nextActionCounter;
 
-                nextActionCounter = setInterval(function() {
-                    nextAction.time = nextAction.time - 1000;
+        nextActionCounter = setInterval(function () {
+          nextAction.time = nextAction.time - 1000;
 
-                    nextActionWindow.innerHTML = `
-                        <span style="color: #fff;">${content.nextAction}: </span>
+          nextActionWindow.innerHTML = `
+                        <span style="color: #fff;">${
+                          content.nextAction
+                        }: </span>
                         <span>${content[nextAction.name]}</span></br>
                         <span style="color: #fff;">${content.in}: </span>
                         <span>${formatTime(nextAction.time)}</span>`;
 
-                    if (nextAction.time <= 0) {
-                        if (nextAction.index === 4) {
-                            document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0].click();
-                        }
-                        else {
-                            setTimeout(function(){
-                                document.getElementsByClassName("cooldown_bar_link")[nextAction.index].click();
-                            }, clickDelay);
-                        };
-                    };
-                }, 1000);
+          if (nextAction.time <= 0) {
+            if (nextAction.index === 4) {
+              document
+                .getElementById("submenu2")
+                .getElementsByClassName("menuitem glow")[0]
+                .click();
+            } else {
+              setTimeout(function () {
+                document
+                  .getElementsByClassName("cooldown_bar_link")
+                  [nextAction.index].click();
+              }, clickDelay);
             }
+          }
+        }, 1000);
+      } else {
+        /******************
+         *    Safe Mode    *
+         ******************/
+        //TODO
+        console.log("No safe mode yet");
+      }
+    }
+  }
 
-            /******************
-            *    Safe Mode    *
-            ******************/
-
-            else {
-                //TODO
-                console.log("No safe mode yet")
-            };
-        };
-    };
-
-    if (autoGoActive) {
-        window.onload = autoGo();
-    };
-
+  if (autoGoActive) {
+    window.onload = autoGo();
+  }
 })();
