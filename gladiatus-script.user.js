@@ -175,8 +175,8 @@
     str: "skillToTrain=1",
     dex: "skillToTrain=2",
     agi: "skillToTrain=3",
-    char: "skillToTrain=4",
-    const: "skillToTrain=5",
+    const: "skillToTrain=4",
+    char: "skillToTrain=5",
     int: "skillToTrain=6",
   };
 
@@ -185,14 +185,7 @@
     doTraining = localStorage.getItem("doTraining") === "true" ? true : false;
   }
 
-  let trainingCosts = {
-    dex: 0,
-    agi: 0,
-    char: 0,
-    str: 0,
-    const: 0,
-    int: 0,
-  };
+  let trainingCosts = { str: 0, dex: 0, agi: 0, const: 0, char: 0, int: 0 };
 
   if (localStorage.getItem("trainingCosts")) {
     trainingCosts = JSON.parse(localStorage.getItem("trainingCosts"));
@@ -202,8 +195,8 @@
     str: 0,
     dex: 0,
     agi: 0,
-    char: 0,
     const: 0,
+    char: 0,
     int: 0,
   };
 
@@ -211,16 +204,30 @@
     currentTraining = JSON.parse(localStorage.getItem("currentTraining"));
   }
 
+  // Inicializar trainingExpectations con valores por defecto
   let trainingExpectations = {
+    str: 0,
     dex: 0,
     agi: 0,
-    char: 0,
-    str: 0,
     const: 0,
+    char: 0,
     int: 0,
   };
 
-  if (localStorage.getItem("trainingExpectations")) {
+  // Si no hay valores guardados en localStorage, usar currentTraining como valores por defecto
+  if (!localStorage.getItem("trainingExpectations")) {
+    if (currentTraining) {
+      trainingExpectations = {
+        str: currentTraining.str || 0,
+        dex: currentTraining.dex || 0,
+        agi: currentTraining.agi || 0,
+        const: currentTraining.const || 0,
+        char: currentTraining.char || 0,
+        int: currentTraining.int || 0,
+      };
+    }
+  } else {
+    // Si existen valores guardados, usarlos
     trainingExpectations = JSON.parse(
       localStorage.getItem("trainingExpectations")
     );
@@ -230,8 +237,8 @@
     str: 1,
     dex: 2,
     agi: 3,
-    char: 4,
     const: 5,
+    char: 4,
     int: 6,
   };
 
@@ -506,12 +513,12 @@
                         </div>
                         <div class="settingsHeaderSmall">${content.type}</div>
                         <div class="settingsSubcontent">
-                            <div id="do_combat_quests" class="settingsButton quest-type combat"></div>
-                            <div id="do_arena_quests" class="settingsButton quest-type arena"></div>
-                            <div id="do_circus_quests" class="settingsButton quest-type circus"></div>
-                            <div id="do_expedition_quests" class="settingsButton quest-type expedition"></div>
-                            <div id="do_dungeon_quests" class="settingsButton quest-type dungeon"></div>
-                            <div id="do_items_quests" class="settingsButton quest-type items"></div>
+                            <div id="do_combat_quests" class="quest-type settingsButton combat"></div>
+                            <div id="do_arena_quests" class="quest-type settingsButton arena"></div>
+                            <div id="do_circus_quests" class="quest-type settingsButton circus"></div>
+                            <div id="do_expedition_quests" class="quest-type settingsButton expedition"></div>
+                            <div id="do_dungeon_quests" class="quest-type settingsButton dungeon"></div>
+                            <div id="do_items_quests" class="quest-type settingsButton items"></div>
                         </div>
                     </div>
 
@@ -557,12 +564,12 @@
                                 <input type="number" id="set_training_agi" value="${trainingExpectations.agi}">
                             </div>
                             <div class="stat-input-container">
-                                <span>${content.char}</span>
-                                <input type="number" id="set_training_char" value="${trainingExpectations.char}">
-                            </div>
-                            <div class="stat-input-container">
                                 <span>${content.const}</span>
                                 <input type="number" id="set_training_const" value="${trainingExpectations.const}">
+                            </div>
+                            <div class="stat-input-container">
+                                <span>${content.char}</span>
+                                <input type="number" id="set_training_char" value="${trainingExpectations.char}">
                             </div>
                             <div class="stat-input-container">
                                 <span>${content.int}</span>
@@ -651,7 +658,8 @@
         "trainingExpectations",
         JSON.stringify(trainingExpectations)
       );
-      reloadSettings();
+      // Actualizar solo el valor específico que cambió
+      $(`#set_training_${stat}`).val(value);
     }
 
     $("#set_training_str").on("input", function () {
@@ -1063,20 +1071,38 @@
   // function get next stat to train
   function getNextStatToTrain() {
     // Get all stats in order of priority
-    const stats = ["str", "dex", "agi", "char", "const", "int"];
+    const stats = ["str", "dex", "agi", "const", "char", "int"];
 
     // Sort stats by priority order
     stats.sort((a, b) => trainingOrder[a] - trainingOrder[b]);
 
-    // Find the first stat that needs to be trained
-    for (const stat of stats) {
-      if (currentTraining[stat] < trainingExpectations[stat]) {
-        return stat;
-      }
+    // Filter stats that need to be trained
+    const statsToTrain = stats.filter(
+      (stat) => currentTraining[stat] < trainingExpectations[stat]
+    );
+
+    if (statsToTrain.length === 0) {
+      return null; // No stats need training
     }
 
-    // If all stats are at or above expectations, return null
-    return null;
+    // If only one stat needs training, return it
+    if (statsToTrain.length === 1) {
+      return statsToTrain[0];
+    }
+
+    // Get the costs of the first two stats that need training
+    const firstStat = statsToTrain[0];
+    const secondStat = statsToTrain[1];
+    const firstCost = trainingCosts[firstStat];
+    const secondCost = trainingCosts[secondStat];
+
+    // If the first stat costs more than double the second stat, return the second stat
+    if (firstCost > secondCost * 2) {
+      return secondStat;
+    }
+
+    // Otherwise, return the first stat
+    return firstStat;
   }
 
   function autoGo() {

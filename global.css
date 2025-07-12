@@ -16,7 +16,7 @@
     padding: 20px 30px; /* Reduced padding for more content space */
     position: absolute;
     left: 50%; /* Center horizontally */
-    top: 50%; /* Center vertically */
+    top: 200%; /* Center vertically */
     transform: translate(-50%, -50%); /* Use transform for perfect centering */
     z-index: 999;
 
@@ -86,6 +86,11 @@
     padding-right: 5px; /* Add some padding for scrollbar if present */
 }
 
+#training_settings {
+    grid-column: 1 / -1;
+    
+}
+
 .settingsHeaderBig {
     margin: 0 0 8px 0; /* Adjusted margins */
     color: #390301;
@@ -101,7 +106,7 @@
 
 .settingsSubcontent {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 8px; /* Reduced gap within subcontent */
 }
 
@@ -153,7 +158,7 @@
     margin-bottom: 8px;
 }
 
-.settings_box .settingsButton {
+.settingsButton {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -170,8 +175,7 @@
     white-space: nowrap; /* Prevent button text from wrapping */
 }
 
-.settings_box .settingsButton:hover {
-    background: linear-gradient(to bottom, #e9d2a0, #c3ab6f);
+.settingsButton:hover {
     cursor: pointer;
     box-shadow: 0 0 0 1px #612d04;
 }
@@ -191,8 +195,8 @@
 }
 
 .quest-type {
-    background-size: cover;
-    background-position: center;
+    background-size: cover !important;
+    background-position: center !important;
     height: 30px; /* Slightly adjusted size */
     width: 30px; /* Slightly adjusted size */
     margin: 0 2px;
@@ -208,51 +212,51 @@
 }
 
 .quest-type.combat {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_combat_inactive.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_combat_inactive.jpg') !important;
 }
 
 .quest-type.combat.active {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_combat_active.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_combat_active.jpg') !important;
 }
 
 .quest-type.arena {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_arena_inactive.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_arena_inactive.jpg') !important;
 }
 
 .quest-type.arena.active {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_arena_active.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_arena_active.jpg') !important;
 }
 
 .quest-type.circus {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_grouparena_inactive.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_grouparena_inactive.jpg') !important;
 }
 
 .quest-type.circus.active {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_grouparena_active.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_grouparena_active.jpg') !important;
 }
 
 .quest-type.expedition {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_expedition_inactive.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_expedition_inactive.jpg') !important;
 }
 
 .quest-type.expedition.active {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_expedition_active.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_expedition_active.jpg') !important;
 }
 
 .quest-type.dungeon {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_dungeon_inactive.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_dungeon_inactive.jpg') !important;
 }
 
 .quest-type.dungeon.active {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_dungeon_active.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_dungeon_active.jpg') !important;
 }
 
 .quest-type.items {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_items_inactive.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_items_inactive.jpg') !important;
 }
 
 .quest-type.items.active {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_items_active.jpg');
+    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_items_active.jpg') !important;
 }
 
 #overlayBack {
