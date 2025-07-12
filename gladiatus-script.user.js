@@ -832,9 +832,11 @@
   function extractTrainingValues() {
     const trainingBox = document.querySelector("#training_box");
     if (trainingBox) {
-      const trainingValues = trainingBox.querySelectorAll(".training_value");
+      const trainingValues = trainingBox.querySelectorAll(
+        ".training_value[style*='color:#540400']"
+      );
       trainingValues.forEach((value, i) => {
-        const content = value.textContent.trim();
+        const content = value.textContent.trim().split("+")[0].trim();
         console.log(content);
 
         switch (i) {
