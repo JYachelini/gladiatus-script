@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.34
+// @version      1.35
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -790,13 +790,18 @@
     reloadSettings();
   }
 
+  function closeSettings() {
+    document.getElementById("settingsWindow").remove();
+    document.getElementById("overlayBack").remove();
+  }
+
+  function reloadSettings() {
+    closeSettings();
+    openSettings();
+  }
+
   // Open Settings
   function openSettings() {
-    function closeSettings() {
-      document.getElementById("settingsWindow").remove();
-      document.getElementById("overlayBack").remove();
-    }
-
     var settingsWindow = document.createElement("div");
     settingsWindow.setAttribute("id", "settingsWindow");
     settingsWindow.innerHTML = `
@@ -1227,11 +1232,6 @@
     $("#set_event_monster_id_3").click(function () {
       setEventMonster("3");
     });
-
-    function reloadSettings() {
-      closeSettings();
-      openSettings();
-    }
 
     function setActiveButtons() {
       $("#expedition_settings").addClass(doExpedition ? "active" : "inactive");
