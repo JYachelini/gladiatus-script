@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.31
+// @version      1.32
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -863,23 +863,47 @@
       $(`#set_training_${stat}`).val(value);
     }
 
-    $("#set_training_str").on("input", function () {
-      setTrainingExpectations("str", $(this).val());
+    $("#set_training_str").on("blur keyup", function (e) {
+      if (e.type === "keyup" && e.key !== "Enter") return;
+      const value = parseInt($(this).val());
+      if (!isNaN(value)) {
+        setTrainingExpectations("str", value);
+      }
     });
-    $("#set_training_dex").on("input", function () {
-      setTrainingExpectations("dex", $(this).val());
+    $("#set_training_dex").on("blur keyup", function (e) {
+      if (e.type === "keyup" && e.key !== "Enter") return;
+      const value = parseInt($(this).val());
+      if (!isNaN(value)) {
+        setTrainingExpectations("dex", value);
+      }
     });
-    $("#set_training_agi").on("input", function () {
-      setTrainingExpectations("agi", $(this).val());
+    $("#set_training_agi").on("blur keyup", function (e) {
+      if (e.type === "keyup" && e.key !== "Enter") return;
+      const value = parseInt($(this).val());
+      if (!isNaN(value)) {
+        setTrainingExpectations("agi", value);
+      }
     });
-    $("#set_training_char").on("input", function () {
-      setTrainingExpectations("char", $(this).val());
+    $("#set_training_const").on("blur keyup", function (e) {
+      if (e.type === "keyup" && e.key !== "Enter") return;
+      const value = parseInt($(this).val());
+      if (!isNaN(value)) {
+        setTrainingExpectations("const", value);
+      }
     });
-    $("#set_training_const").on("input", function () {
-      setTrainingExpectations("const", $(this).val());
+    $("#set_training_char").on("blur keyup", function (e) {
+      if (e.type === "keyup" && e.key !== "Enter") return;
+      const value = parseInt($(this).val());
+      if (!isNaN(value)) {
+        setTrainingExpectations("char", value);
+      }
     });
-    $("#set_training_int").on("input", function () {
-      setTrainingExpectations("int", $(this).val());
+    $("#set_training_int").on("blur keyup", function (e) {
+      if (e.type === "keyup" && e.key !== "Enter") return;
+      const value = parseInt($(this).val());
+      if (!isNaN(value)) {
+        setTrainingExpectations("int", value);
+      }
     });
 
     function setMonster(id) {
@@ -947,8 +971,12 @@
       setAutoFood(false);
     });
 
-    $("#set_minimum_health").on("input", function () {
-      setMinimumHealth($(this).val());
+    $("#set_minimum_health").on("blur keyup", function (e) {
+      if (e.type === "keyup" && e.key !== "Enter") return;
+      const value = parseInt($(this).val());
+      if (!isNaN(value)) {
+        setMinimumHealth(value);
+      }
     });
 
     $("#do_safe_mode_true").click(function () {
