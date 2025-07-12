@@ -5,8 +5,8 @@
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
 // @exclude      *://*.gladiatus.gameforge.com/game/index.php?mod=start
-// @downloadURL  https://github.com/JYachelini/gladiatus-script/blob/master/gladiatus-script.user.js
-// @updateURL    https://github.com/JYachelini/gladiatus-script/blob/master/gladiatus-script.user.js
+// @downloadURL  https://github.com/JYachelini/gladiatus-script/raw/refs/heads/master/gladiatus-script.user.js
+// @updateURL    https://github.com/JYachelini/gladiatus-script/raw/refs/heads/master/gladiatus-script.user.js
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js
