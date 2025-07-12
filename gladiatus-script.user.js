@@ -188,6 +188,10 @@
     intReq: 0,
   };
 
+  if (localStorage.getItem("training")) {
+    training = JSON.parse(localStorage.getItem("training"));
+  }
+
   /*****************
    *  Translations  *
    *****************/
