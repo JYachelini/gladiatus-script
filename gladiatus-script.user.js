@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.23
+// @version      1.24
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -71,6 +71,61 @@
     dungeon: true,
     items: true,
   };
+
+  // Funciones de comida
+  function isInOverviewPage() {
+    return window.location.href.includes("mod=overview");
+  }
+
+  function consumeLowestFood() {
+    // Si no estamos en overview, buscar y hacer clic en el enlace
+    if (!isInOverviewPage()) {
+      const overviewLink = document.querySelector("a[href*='mod=overview']");
+      if (overviewLink) {
+        overviewLink.click();
+        return; // Detener la ejecución después de hacer clic
+      }
+    }
+
+    // Click en el inventario 1
+    const inventoryTab = document.querySelector(
+      "#inventory_nav a[data-bag-number='512']"
+    );
+    if (inventoryTab) {
+      inventoryTab.click();
+    }
+
+    // Esperar un momento para que se cargue el inventario
+    setTimeout(() => {
+      // Buscar todas las comidas en el inventario
+      const foodItems = document.querySelectorAll(
+        "div[data-vitality-attached='true']"
+      );
+
+      if (foodItems.length === 0) {
+        return;
+      }
+
+      // Encontrar la comida que cura menos
+      let lowestFood = null;
+      let lowestHeal = Infinity;
+
+      foodItems.forEach((item) => {
+        const vitality = parseInt(item.getAttribute("data-vitality"));
+        if (vitality < lowestHeal) {
+          lowestHeal = vitality;
+          lowestFood = item;
+        }
+      });
+
+      if (lowestFood) {
+        // Simular click en la comida
+        //lowestFood.click();
+        console.log(lowestFood);
+      }
+    }, 500);
+  }
+
   if (localStorage.getItem("questTypes")) {
     questTypes = JSON.parse(localStorage.getItem("questTypes"));
   }
@@ -1247,9 +1302,10 @@
       }
       showLowHealthAlert();*/
 
-      doExpedition = false;
-      doEventExpedition = false;
-      window.reload();
+      //doExpedition = false;
+      //doEventExpedition = false;
+      consumeLowestFood();
+      //window.reload();
 
       // @TODO
     } else if (doQuests === true && nextQuestTime < currentTime) {
