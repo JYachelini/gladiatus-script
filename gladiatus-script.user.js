@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.37
+// @version      1.38
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -685,27 +685,33 @@
   function setAutoFood(bool) {
     doAutoFood = bool;
     localStorage.setItem("doAutoFood", bool);
+    reloadSettings();
   }
 
   function setMinimumHealth(value) {
     minimumHealth = parseInt(value);
     localStorage.setItem("minimumHealth", minimumHealth);
+    reloadSettings();
   }
 
   // Safe mode settings
   function setSafeMode(bool) {
     safeMode = bool;
     localStorage.setItem("safeMode", bool);
+
+    reloadSettings();
   }
 
   function setDoExpedition(bool) {
     doExpedition = bool;
     localStorage.setItem("doExpedition", bool);
+    reloadSettings();
   }
 
   function setDoTraining(bool) {
     doTraining = bool;
     localStorage.setItem("doTraining", bool);
+    reloadSettings();
   }
 
   function setTrainingExpectations(stat, value) {
@@ -721,56 +727,67 @@
   function setMonster(id) {
     monsterId = id;
     localStorage.setItem("monsterId", id);
+    reloadSettings();
   }
 
   function setDoDungeon(bool) {
     doDungeon = bool;
     localStorage.setItem("doDungeon", bool);
+    reloadSettings();
   }
 
   function setDoArena(bool) {
     doArena = bool;
     localStorage.setItem("doArena", bool);
+    reloadSettings();
   }
 
   function setDungeonDifficulty(difficulty) {
     dungeonDifficulty = difficulty;
     localStorage.setItem("dungeonDifficulty", difficulty);
+    reloadSettings();
   }
 
   function setArenaOpponentLevel(level) {
     arenaOpponentLevel = level;
     localStorage.setItem("arenaOpponentLevel", level);
+    reloadSettings();
   }
 
   function setDoCircus(bool) {
     doCircus = bool;
     localStorage.setItem("doCircus", bool);
+    reloadSettings();
   }
 
   function setCircusOpponentLevel(level) {
     circusOpponentLevel = level;
     localStorage.setItem("circusOpponentLevel", level);
+    reloadSettings();
   }
 
   function setDoEventExpedition(bool) {
     doEventExpedition = bool;
     localStorage.setItem("doEventExpedition", bool);
+    reloadSettings();
   }
 
   function setQuestTypes(type) {
     questTypes[type] = !questTypes[type];
     localStorage.setItem("questTypes", JSON.stringify(questTypes));
+    reloadSettings();
   }
 
   function setDoQuests(bool) {
     doQuests = bool;
     localStorage.setItem("doQuests", bool);
+    reloadSettings();
   }
 
   function setEventMonster(id) {
     eventMonsterId = id;
     localStorage.setItem("eventMonsterId", id);
+    reloadSettings();
   }
 
   function closeSettings() {
@@ -781,8 +798,8 @@
   function reloadSettings() {
     if (document.getElementById("settingsWindow")) {
       closeSettings();
+      openSettings();
     }
-    openSettings();
   }
 
   function setLanguage(language) {
@@ -801,6 +818,8 @@
       default:
         content = { ...contentEN };
     }
+
+    reloadSettings();
   }
 
   // Open Settings
