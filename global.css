@@ -1,5 +1,4 @@
-#autoGoButton
-{
+#autoGoButton {
     height: 27px;
     width: 150px;
     margin-right: 2px;
@@ -7,16 +6,18 @@
     border: none;
     color: #58ffbb;
     float: left;
-    background-image: url('https://i.imgur.com/20OoeBD.png')
+    background-image: url('https://i.imgur.com/20OoeBD.png');
 }
 
-
-#settingsWindow
-{
+#settingsWindow {
     height: 511px;
     width: 538px;
     padding: 50px 40px;
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/settings.png');
+    /* Removed background-image */
+    background-color: #f0ead6; /* A light, warm background color */
+    border: 2px solid #612d04; /* A dark brown border */
+    border-radius: 10px; /* Rounded corners for a softer look */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* A subtle shadow for depth */
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -27,8 +28,7 @@
     font: 600 16px Arial;
 }
 
-#settingsLanguage
-{
+#settingsLanguage {
     position: absolute;
     top: 20px;
     right: 62px;
@@ -40,22 +40,26 @@
     cursor: default;
 }
 
-#settingsLanguage img
-{
+#settingsLanguage img {
     cursor: pointer;
     border: 1px solid #612d04;
+    border-radius: 3px; /* Slightly rounded corners for flag images */
 }
 
-#settingsHeader
-{
+#settingsLanguage img:hover {
+    opacity: 0.8; /* Slight opacity change on hover for flags */
+}
+
+#settingsHeader {
     display: flex;
     align-items: flex-start;
     padding-top: 20px;
     letter-spacing: 2px;
+    color: #390301; /* Darker color for the header */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle text shadow */
 }
 
-#settingsContent
-{
+#settingsContent {
     display: flex;
     flex-wrap: wrap;
     margin-top: 20px;
@@ -64,20 +68,19 @@
     justify-content: space-between;
 }
 
-.settingsHeaderBig
-{
+.settingsHeaderBig {
     margin: 3px 0px;
+    color: #390301; /* Consistent dark color for big headers */
 }
 
-.settingsHeaderSmall
-{
+.settingsHeaderSmall {
     font-size: 14px;
     font-weight: 400;
     margin-top: 6px;
+    color: #612d04; /* Consistent color for small headers */
 }
 
-.settingsSubcontent
-{
+.settingsSubcontent {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -92,21 +95,23 @@
 
 .stat-input-container span {
     font-weight: bold;
+    color: #612d04;
 }
 
 .stat-input-container input {
     width: 100px;
     padding: 5px;
-    border: 1px solid #612d04;
+    border: 1px solid #8e753f; /* Softer border color */
     border-radius: 3px;
-    background-color: #f5f5f5;
-    color: #612d04;
+    background-color: #fffaf0; /* Off-white background */
+    color: #390301; /* Darker text color */
     font: 600 14px Arial;
 }
 
 .stat-input-container input:focus {
     outline: none;
-    border-color: #58ffbb;
+    border-color: #c3ab6f; /* Focus color matching button highlight */
+    box-shadow: 0 0 5px rgba(195, 171, 111, 0.5); /* Subtle shadow on focus */
 }
 
 .settings_box {
@@ -114,10 +119,12 @@
     flex-direction: column;
     gap: 10px;
     padding: 15px;
-    border: 1px solid #612d04;
-    border-radius: 5px;
+    border: 1px solid #8e753f; /* Consistent border color */
+    border-radius: 8px; /* Slightly more rounded corners */
     flex: 1 1 45%;
     min-width: 200px;
+    background-color: #fff; /* White background for each box */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for each box */
 }
 
 .settings_box .settingsHeaderBig {
@@ -137,12 +144,6 @@
     margin-top: 6px;
 }
 
-.settings_box .settingsSubcontent {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
 .settings_box .settingsButton {
     display: flex;
     align-items: center;
@@ -154,92 +155,102 @@
     border-radius: 5px;
     box-shadow: 0 0 0 1px #8e753f;
     font-size: 13px;
-    background: #390301;
-    background: -moz-linear-gradient(top,#c3ab6f,#886933);
-    background: linear-gradient(to bottom,#c3ab6f,#886933);
+    color: #390301; /* Text color for buttons */
+    background: linear-gradient(to bottom, #d4be8a, #ac8d4f); /* Richer gradient */
+    transition: all 0.2s ease-in-out; /* Smooth transition for hover effects */
 }
 
 .settings_box .settingsButton:hover {
-    background: linear-gradient(to bottom, #C3AB6F, #DACFA2);
+    background: linear-gradient(to bottom, #e9d2a0, #c3ab6f); /* Lighter gradient on hover */
     cursor: pointer;
+    box-shadow: 0 0 0 1px #612d04; /* Darker shadow on hover */
 }
 
 .settings_box.active .settingsButton.active {
     border: solid 1px #44dc46;
-    cursor: pointer;
+    background: linear-gradient(to bottom, #72c674, #44dc46); /* Green gradient for active */
+    color: #fff; /* White text for active buttons */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
 .settings_box.inactive .settingsButton.active {
     border: solid 1px #ea1414;
-    cursor: pointer;
+    background: linear-gradient(to bottom, #f25f5f, #ea1414); /* Red gradient for inactive active */
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
 .quest-type {
-    background-size: contain;
+    background-size: cover; /* Changed to cover to ensure image fills the area */
+    background-position: center; /* Center the background image */
     height: 31px;
     width: 31px;
     margin: 0px 2px;
+    border: 1px solid #8e753f; /* Added a border to quest type icons */
+    border-radius: 3px; /* Slightly rounded corners */
+    transition: all 0.2s ease-in-out; /* Smooth transition */
 }
 
 .quest-type:hover {
-    background-size: contain;
     filter: brightness(1.2);
+    transform: scale(1.05); /* Slightly enlarge on hover */
 }
 
+/* Specific quest type active/inactive states remain as they were, assuming the images provide the visual cue */
 .quest-type.combat {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_combat_inactive.jpg')
+    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_combat_inactive.jpg');
 }
 
 .quest-type.combat.active {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_combat_active.jpg')
+    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_combat_active.jpg');
 }
 
 .quest-type.arena {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_arena_inactive.jpg')
+    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_arena_inactive.jpg');
 }
 
 .quest-type.arena.active {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_arena_active.jpg')
+    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_arena_active.jpg');
 }
 
 .quest-type.circus {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_grouparena_inactive.jpg')
+    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_grouparena_inactive.jpg');
 }
 
 .quest-type.circus.active {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_grouparena_active.jpg')
+    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_grouparena_active.jpg');
 }
 
 .quest-type.expedition {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_expedition_inactive.jpg')
+    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_expedition_inactive.jpg');
 }
 
 .quest-type.expedition.active {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_expedition_active.jpg')
+    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_expedition_active.jpg');
 }
 
 .quest-type.dungeon {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_dungeon_inactive.jpg')
+    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_dungeon_inactive.jpg');
 }
 
 .quest-type.dungeon.active {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_dungeon_active.jpg')
+    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_dungeon_active.jpg');
 }
 
 .quest-type.items {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_items_inactive.jpg')
+    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_items_inactive.jpg');
 }
 
 .quest-type.items.active {
-    background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_items_active.jpg')
+    background-image: url('https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/icon_items_active.jpg');
 }
 
-#overlayBack
-{
+#overlayBack {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
+    height: 100%; /* Ensure overlay covers the full height */
     background: #000;
     opacity: 0.6;
     z-index: 900;
