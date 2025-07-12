@@ -1,16 +1,16 @@
 // ==UserScript==
-// @name         Gladiatus Script - Yache version
+// @name         Gladiatus Script - JYachelini version
 // @version      1.0.0
 // @description  Gladiatus Script
-// @author       Yache
+// @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
 // @exclude      *://*.gladiatus.gameforge.com/game/index.php?mod=start
-// @downloadURL  https://github.com/yache/gladiatus-script/raw/master/gladiatus-script.js
-// @updateURL    https://github.com/yache/gladiatus-script/raw/master/gladiatus-script.js
+// @downloadURL  https://github.com/JYachelini/gladiatus-script/raw/master/gladiatus-script.js
+// @updateURL    https://github.com/JYachelini/gladiatus-script/raw/master/gladiatus-script.js
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js
-// @resource     customCSS_global  https://raw.githubusercontent.com/yache/gladiatus-script/master/global.css?ver=2.6.4
+// @resource     customCSS_global  https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/global.css?ver=2.6.4
 // ==/UserScript==
 
 
@@ -30,7 +30,9 @@
     *     Global     *
     *****************/  
 
-    const assetsUrl = 'https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets';
+    const assetsUrl = 'https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets';
+
+    console.log("holaaaaaaaaaaaaaaaaaaaaaa");
 
     let autoGoActive = sessionStorage.getItem('autoGoActive') === "true" ? true : false;
 
