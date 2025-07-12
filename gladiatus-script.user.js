@@ -1187,7 +1187,7 @@
      ***************/
 
     if (player.hp < 10) {
-      console.log("Low health");
+      /*console.log("Low health");
 
       var lowHealthAlert = document.createElement("div");
 
@@ -1219,7 +1219,11 @@
             document.getElementById("header_game").children[0]
           );
       }
-      showLowHealthAlert();
+      showLowHealthAlert();*/
+
+      doExpedition = false;
+      doEventExpedition = false;
+      window.reload();
 
       // @TODO
     } else if (doQuests === true && nextQuestTime < currentTime) {
