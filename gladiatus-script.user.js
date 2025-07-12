@@ -32,8 +32,6 @@
 
     const assetsUrl = 'https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets';
 
-    console.log("holaaaaaaaaaaaaaaaaaaaaaa");
-    console.log("holaaaaaaaaaaaaaaaaaaaaaa");
 
     let autoGoActive = sessionStorage.getItem('autoGoActive') === "true" ? true : false;
 
