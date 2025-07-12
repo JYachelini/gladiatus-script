@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.5
+// @version      1.6
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -833,10 +833,10 @@
     const trainingBox = document.querySelector("#training_box");
     if (trainingBox) {
       const trainingValues = trainingBox.querySelectorAll(
-        ".training_value[style*='color:#540400']"
+        ".training_costs span"
       );
       trainingValues.forEach((value, i) => {
-        const content = value.textContent.trim().split("+")[0].trim();
+        const content = value.textContent.trim();
         console.log(content);
 
         switch (i) {
