@@ -176,18 +176,63 @@
     doTraining = localStorage.getItem("doTraining") === "true" ? true : false;
   }
 
-  let training = {
-    dexReq: 0,
-    agiReq: 0,
-    charReq: 0,
-    strReq: 0,
-    constReq: 0,
-    intReq: 0,
+  const trainingCosts = {
+    dex: 0,
+    agi: 0,
+    char: 0,
+    str: 0,
+    const: 0,
+    int: 0,
   };
 
-  if (localStorage.getItem("training")) {
-    training = JSON.parse(localStorage.getItem("training"));
+  if (localStorage.getItem("trainingCosts")) {
+    trainingCosts = JSON.parse(localStorage.getItem("trainingCosts"));
   }
+
+  const currentTraining = {
+    str: 0,
+    dex: 0,
+    agi: 0,
+    char: 0,
+    const: 0,
+    int: 0,
+  };
+
+  if (localStorage.getItem("currentTraining")) {
+    currentTraining = JSON.parse(localStorage.getItem("currentTraining"));
+  }
+
+  const trainingExpectations = {
+    dex: 0,
+    agi: 0,
+    char: 0,
+    str: 0,
+    const: 0,
+    int: 0,
+  };
+
+  if (localStorage.getItem("trainingExpectations")) {
+    trainingExpectations = JSON.parse(
+      localStorage.getItem("trainingExpectations")
+    );
+  }
+
+  const trainingOrder = {
+    str: 1,
+    dex: 2,
+    agi: 3,
+    char: 4,
+    const: 5,
+    int: 6,
+  };
+
+  if (localStorage.getItem("trainingOrder")) {
+    trainingOrder = JSON.parse(localStorage.getItem("trainingOrder"));
+  }
+
+  const currentGold = parseFloat(
+    document.getElementById("sstat_gold_val").first().html().replace(/\./g, "")
+  );
 
   /*****************
    *  Translations  *
@@ -829,7 +874,7 @@
    ****************/
 
   // Function to extract training values
-  function extractTrainingValues() {
+  function extractTrainingCosts() {
     const trainingBox = document.querySelector("#training_box");
     if (trainingBox) {
       const trainingValues = trainingBox.querySelectorAll(
@@ -841,28 +886,67 @@
 
         switch (i) {
           case 0:
-            training.strReq = Number(content);
+            trainingCosts.str = parseFloat(content);
             break;
           case 1:
-            training.dexReq = Number(content);
+            trainingCosts.dex = parseFloat(content);
             break;
           case 2:
-            training.agiReq = Number(content);
+            trainingCosts.agi = parseFloat(content);
             break;
           case 3:
-            training.constReq = Number(content);
+            trainingCosts.const = parseFloat(content);
             break;
           case 4:
-            training.charReq = Number(content);
+            trainingCosts.char = parseFloat(content);
             break;
           case 5:
-            training.intReq = Number(content);
+            trainingCosts.int = parseFloat(content);
             break;
         }
       });
-      localStorage.setItem("training", JSON.stringify(training));
+      localStorage.setItem("trainingCosts", JSON.stringify(trainingCosts));
     }
   }
+
+  function extractTrainingValues() {
+    const trainingBox = document.querySelector("#training_box");
+    if (trainingBox) {
+      const trainingValues = trainingBox.querySelectorAll(
+        ".training_values > div:first-child"
+      );
+      trainingValues.forEach((value, i) => {
+        const content = value.textContent.trim().split("+")[0].trim();
+
+        console.log(content);
+
+        switch (i) {
+          case 0:
+            currentTraining.str = parseFloat(content);
+            break;
+          case 1:
+            currentTraining.dex = parseFloat(content);
+            break;
+          case 2:
+            currentTraining.agi = parseFloat(content);
+            break;
+          case 3:
+            currentTraining.const = parseFloat(content);
+            break;
+          case 4:
+            currentTraining.char = parseFloat(content);
+            break;
+          case 5:
+            currentTraining.int = parseFloat(content);
+            break;
+        }
+      });
+      localStorage.setItem("trainingCosts", JSON.stringify(trainingCosts));
+    }
+  }
+
+  // function get next stat to train
+  function getNextStatToTrain() {}
 
   function autoGo() {
     // Variables
@@ -920,12 +1004,12 @@
       const isPageTraining = window.location.href.includes("mod=training");
       if (!isPageTraining) {
         if (
-          !training.dexReq ||
-          !training.agiReq ||
-          !training.charReq ||
-          !training.strReq ||
-          !training.constReq ||
-          !training.intReq
+          !trainingCosts.dex ||
+          !trainingCosts.agi ||
+          !trainingCosts.char ||
+          !trainingCosts.str ||
+          !trainingCosts.const ||
+          !trainingCosts.int
         ) {
           const trainingLink = document.querySelector(
             'a[href*="mod=training"]'
@@ -937,9 +1021,10 @@
       } else {
         console.log("Extracting training values");
         extractTrainingValues();
+        extractTrainingCosts();
       }
     }
-    console.log(training);
+    console.log(trainingCosts);
     setTimeout({}, 100000000);
 
     /***************
