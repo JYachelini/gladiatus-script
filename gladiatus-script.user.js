@@ -1284,17 +1284,31 @@
   }
 
   // Auto GO button
-
   var autoGoButton = document.createElement("button");
   autoGoButton.setAttribute("id", "autoGoButton");
   autoGoButton.className = "menuitem";
+  autoGoButton.style = "cursor: pointer;";
 
   if (autoGoActive == false) {
     autoGoButton.innerHTML = "Auto GO";
-    autoGoButton.addEventListener("click", setAutoGoActive);
+    autoGoButton.addEventListener("click", function(e) {
+      e.preventDefault();
+      setAutoGoActive();
+    });
+    autoGoButton.addEventListener("touchstart", function(e) {
+      e.preventDefault();
+      setAutoGoActive();
+    });
   } else {
     autoGoButton.innerHTML = "STOP";
-    autoGoButton.addEventListener("click", setAutoGoInactive);
+    autoGoButton.addEventListener("click", function(e) {
+      e.preventDefault();
+      setAutoGoInactive();
+    });
+    autoGoButton.addEventListener("touchstart", function(e) {
+      e.preventDefault();
+      setAutoGoInactive();
+    });
   }
 
   document
@@ -1305,7 +1319,6 @@
     );
 
   // Settings button
-
   var settingsButton = document.createElement("button");
   settingsButton.className = "menuitem";
   settingsButton.innerHTML = `<img src="${assetsUrl}/cog.svg" title="Ustawienia" height="20" width="20" style="filter: invert(83%) sepia(52%) saturate(503%) hue-rotate(85deg) brightness(103%) contrast(101%); z-index: 999;">`;
@@ -1313,7 +1326,14 @@
     "style",
     "display: flex; justify-content: center; align-items: center; height: 27px; width: 27px; cursor: pointer; border: none; color: #5dce5d; padding: 0; background-image: url('https://i.imgur.com/jf7BXTX.png')"
   );
-  settingsButton.addEventListener("click", openSettings);
+  settingsButton.addEventListener("click", function(e) {
+    e.preventDefault();
+    openSettings();
+  });
+  settingsButton.addEventListener("touchstart", function(e) {
+    e.preventDefault();
+    openSettings();
+  });
   document
     .getElementById("mainmenu")
     .insertBefore(
