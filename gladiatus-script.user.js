@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.41
+// @version      1.42
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -1023,18 +1023,27 @@
     const wrapperHeight = document.getElementById("wrapper_game").clientHeight;
     overlayBack.setAttribute("id", "overlayBack");
     overlayBack.setAttribute("style", `height: ${wrapperHeight}px;`);
-    overlayBack.addEventListener("click", closeSettings);
+    overlayBack.addEventListener("click", function (e) {
+      e.preventDefault();
+      closeSettings();
+    });
+    overlayBack.addEventListener("touchstart", function (e) {
+      e.preventDefault();
+      closeSettings();
+    });
     document.getElementsByTagName("body")[0].appendChild(overlayBack);
 
     // Set Language
-
-    $("#languageEN").click(function () {
+    $("#languageEN").on("click touchstart", function (e) {
+      e.preventDefault();
       setLanguage("EN");
     });
-    $("#languagePL").click(function () {
+    $("#languagePL").on("click touchstart", function (e) {
+      e.preventDefault();
       setLanguage("PL");
     });
-    $("#languageES").click(function () {
+    $("#languageES").on("click touchstart", function (e) {
+      e.preventDefault();
       setLanguage("ES");
     });
 
@@ -1042,10 +1051,12 @@
 
     // Food settings
 
-    $("#do_expedition_true").click(function () {
+    $("#do_expedition_true").on("click touchstart", function (e) {
+      e.preventDefault();
       setDoExpedition(true);
     });
-    $("#do_expedition_false").click(function () {
+    $("#do_expedition_false").on("click touchstart", function (e) {
+      e.preventDefault();
       setDoExpedition(false);
     });
 
@@ -1056,42 +1067,48 @@
       setDoExpedition(false);
     });
 
-    $("#set_training_str").on("blur keyup", function (e) {
+    $("#set_training_str").on("blur keyup touchend", function (e) {
+      e.preventDefault();
       if (e.type === "keyup" && e.key !== "Enter") return;
       const value = parseInt($(this).val());
       if (!isNaN(value)) {
         setTrainingExpectations("str", value);
       }
     });
-    $("#set_training_dex").on("blur keyup", function (e) {
+    $("#set_training_dex").on("blur keyup touchend", function (e) {
+      e.preventDefault();
       if (e.type === "keyup" && e.key !== "Enter") return;
       const value = parseInt($(this).val());
       if (!isNaN(value)) {
         setTrainingExpectations("dex", value);
       }
     });
-    $("#set_training_agi").on("blur keyup", function (e) {
+    $("#set_training_agi").on("blur keyup touchend", function (e) {
+      e.preventDefault();
       if (e.type === "keyup" && e.key !== "Enter") return;
       const value = parseInt($(this).val());
       if (!isNaN(value)) {
         setTrainingExpectations("agi", value);
       }
     });
-    $("#set_training_const").on("blur keyup", function (e) {
+    $("#set_training_const").on("blur keyup touchend", function (e) {
+      e.preventDefault();
       if (e.type === "keyup" && e.key !== "Enter") return;
       const value = parseInt($(this).val());
       if (!isNaN(value)) {
         setTrainingExpectations("const", value);
       }
     });
-    $("#set_training_char").on("blur keyup", function (e) {
+    $("#set_training_char").on("blur keyup touchend", function (e) {
+      e.preventDefault();
       if (e.type === "keyup" && e.key !== "Enter") return;
       const value = parseInt($(this).val());
       if (!isNaN(value)) {
         setTrainingExpectations("char", value);
       }
     });
-    $("#set_training_int").on("blur keyup", function (e) {
+    $("#set_training_int").on("blur keyup touchend", function (e) {
+      e.preventDefault();
       if (e.type === "keyup" && e.key !== "Enter") return;
       const value = parseInt($(this).val());
       if (!isNaN(value)) {
@@ -1112,10 +1129,12 @@
       setMonster("3");
     });
 
-    $("#do_dungeon_true").click(function () {
+    $("#do_dungeon_true").on("click touchstart", function (e) {
+      e.preventDefault();
       setDoDungeon(true);
     });
-    $("#do_dungeon_false").click(function () {
+    $("#do_dungeon_false").on("click touchstart", function (e) {
+      e.preventDefault();
       setDoDungeon(false);
     });
 
@@ -1126,21 +1145,26 @@
       setDungeonDifficulty("advanced");
     });
 
-    $("#do_arena_true").click(function () {
+    $("#do_arena_true").on("click touchstart", function (e) {
+      e.preventDefault();
       setDoArena(true);
     });
-    $("#do_arena_false").click(function () {
+    $("#do_arena_false").on("click touchstart", function (e) {
+      e.preventDefault();
       setDoArena(false);
     });
 
-    $("#do_auto_food_true").click(function () {
+    $("#do_auto_food_true").on("click touchstart", function (e) {
+      e.preventDefault();
       setAutoFood(true);
     });
-    $("#do_auto_food_false").click(function () {
+    $("#do_auto_food_false").on("click touchstart", function (e) {
+      e.preventDefault();
       setAutoFood(false);
     });
 
-    $("#set_minimum_health").on("blur keyup", function (e) {
+    $("#set_minimum_health").on("blur keyup touchend", function (e) {
+      e.preventDefault();
       if (e.type === "keyup" && e.key !== "Enter") return;
       const value = parseInt($(this).val());
       if (!isNaN(value)) {
@@ -1148,70 +1172,90 @@
       }
     });
 
-    $("#do_safe_mode_true").click(function () {
+    $("#do_safe_mode_true").on("click touchstart", function (e) {
+      e.preventDefault();
       setSafeMode(true);
     });
-    $("#do_safe_mode_false").click(function () {
+    $("#do_safe_mode_false").on("click touchstart", function (e) {
+      e.preventDefault();
       setSafeMode(false);
     });
 
-    $("#do_training_true").click(function () {
+    $("#do_training_true").on("click touchstart", function (e) {
+      e.preventDefault();
       setDoTraining(true);
     });
-    $("#do_training_false").click(function () {
+    $("#do_training_false").on("click touchstart", function (e) {
+      e.preventDefault();
       setDoTraining(false);
     });
 
-    $("#set_arena_opponent_level_min").click(function () {
+    $("#set_arena_opponent_level_min").on("click touchstart", function (e) {
+      e.preventDefault();
       setArenaOpponentLevel("min");
     });
-    $("#set_arena_opponent_level_max").click(function () {
+    $("#set_arena_opponent_level_max").on("click touchstart", function (e) {
+      e.preventDefault();
       setArenaOpponentLevel("max");
     });
-    $("#set_arena_opponent_level_random").click(function () {
+    $("#set_arena_opponent_level_random").on("click touchstart", function (e) {
+      e.preventDefault();
       setArenaOpponentLevel("random");
     });
 
-    $("#do_circus_true").click(function () {
+    $("#do_circus_true").on("click touchstart", function (e) {
+      e.preventDefault();
       setDoCircus(true);
     });
-    $("#do_circus_false").click(function () {
+    $("#do_circus_false").on("click touchstart", function (e) {
+      e.preventDefault();
       setDoCircus(false);
     });
 
-    $("#set_circus_opponent_level_min").click(function () {
+    $("#set_circus_opponent_level_min").on("click touchstart", function (e) {
+      e.preventDefault();
       setCircusOpponentLevel("min");
     });
-    $("#set_circus_opponent_level_max").click(function () {
+    $("#set_circus_opponent_level_max").on("click touchstart", function (e) {
+      e.preventDefault();
       setCircusOpponentLevel("max");
     });
-    $("#set_circus_opponent_level_random").click(function () {
+    $("#set_circus_opponent_level_random").on("click touchstart", function (e) {
+      e.preventDefault();
       setCircusOpponentLevel("random");
     });
 
-    $("#do_quests_true").click(function () {
+    $("#do_quests_true").on("click touchstart", function (e) {
+      e.preventDefault();
       setDoQuests(true);
     });
-    $("#do_quests_false").click(function () {
+    $("#do_quests_false").on("click touchstart", function (e) {
+      e.preventDefault();
       setDoQuests(false);
     });
 
-    $("#do_combat_quests").click(function () {
+    $("#do_combat_quests").on("click touchstart", function (e) {
+      e.preventDefault();
       setQuestTypes("combat");
     });
-    $("#do_arena_quests").click(function () {
+    $("#do_arena_quests").on("click touchstart", function (e) {
+      e.preventDefault();
       setQuestTypes("arena");
     });
-    $("#do_circus_quests").click(function () {
+    $("#do_circus_quests").on("click touchstart", function (e) {
+      e.preventDefault();
       setQuestTypes("circus");
     });
-    $("#do_expedition_quests").click(function () {
+    $("#do_expedition_quests").on("click touchstart", function (e) {
+      e.preventDefault();
       setQuestTypes("expedition");
     });
-    $("#do_dungeon_quests").click(function () {
+    $("#do_dungeon_quests").on("click touchstart", function (e) {
+      e.preventDefault();
       setQuestTypes("dungeon");
     });
-    $("#do_items_quests").click(function () {
+    $("#do_items_quests").on("click touchstart", function (e) {
+      e.preventDefault();
       setQuestTypes("items");
     });
 
@@ -1222,16 +1266,20 @@
       setDoEventExpedition(false);
     });
 
-    $("#set_event_monster_id_0").click(function () {
+    $("#set_event_monster_id_0").on("click touchstart", function (e) {
+      e.preventDefault();
       setEventMonster("0");
     });
-    $("#set_event_monster_id_1").click(function () {
+    $("#set_event_monster_id_1").on("click touchstart", function (e) {
+      e.preventDefault();
       setEventMonster("1");
     });
-    $("#set_event_monster_id_2").click(function () {
+    $("#set_event_monster_id_2").on("click touchstart", function (e) {
+      e.preventDefault();
       setEventMonster("2");
     });
-    $("#set_event_monster_id_3").click(function () {
+    $("#set_event_monster_id_3").on("click touchstart", function (e) {
+      e.preventDefault();
       setEventMonster("3");
     });
 
