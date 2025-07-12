@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.9
+// @version      1.10
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -886,22 +886,22 @@
 
         switch (i) {
           case 0:
-            trainingCosts.str = parseFloat(content);
+            trainingCosts.str = parseInt(content, 10);
             break;
           case 1:
-            trainingCosts.dex = parseFloat(content);
+            trainingCosts.dex = parseInt(content, 10);
             break;
           case 2:
-            trainingCosts.agi = parseFloat(content);
+            trainingCosts.agi = parseInt(content, 10);
             break;
           case 3:
-            trainingCosts.const = parseFloat(content);
+            trainingCosts.const = parseInt(content, 10);
             break;
           case 4:
-            trainingCosts.char = parseFloat(content);
+            trainingCosts.char = parseInt(content, 10);
             break;
           case 5:
-            trainingCosts.int = parseFloat(content);
+            trainingCosts.int = parseInt(content, 10);
             break;
         }
       });
@@ -913,7 +913,7 @@
     const trainingBox = document.querySelector("#training_box");
     if (trainingBox) {
       const trainingValues = trainingBox.querySelectorAll(
-        ".training_values .gca-training-values > div:first-child"
+        ".training_values.gca-training-values > div:first-child"
       );
       trainingValues.forEach((value, i) => {
         const content = value.textContent.trim().split("+")[0].trim();
