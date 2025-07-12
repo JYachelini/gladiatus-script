@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.39
+// @version      1.40
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -1757,7 +1757,7 @@
           nextQuestTime = currentTime + nextQuestIn;
           localStorage.setItem("nextQuestTime", nextQuestTime);
         } else {
-          nextQuestTime = currentTime + 300000;
+          nextQuestTime = currentTime + 5000;
           localStorage.setItem("nextQuestTime", nextQuestTime);
         }
 
