@@ -176,7 +176,7 @@
     doTraining = localStorage.getItem("doTraining") === "true" ? true : false;
   }
 
-  const trainingCosts = {
+  let trainingCosts = {
     dex: 0,
     agi: 0,
     char: 0,
@@ -189,7 +189,7 @@
     trainingCosts = JSON.parse(localStorage.getItem("trainingCosts"));
   }
 
-  const currentTraining = {
+  let currentTraining = {
     str: 0,
     dex: 0,
     agi: 0,
@@ -202,7 +202,7 @@
     currentTraining = JSON.parse(localStorage.getItem("currentTraining"));
   }
 
-  const trainingExpectations = {
+  let trainingExpectations = {
     dex: 0,
     agi: 0,
     char: 0,
@@ -217,7 +217,7 @@
     );
   }
 
-  const trainingOrder = {
+  let trainingOrder = {
     str: 1,
     dex: 2,
     agi: 3,
@@ -913,7 +913,7 @@
     const trainingBox = document.querySelector("#training_box");
     if (trainingBox) {
       const trainingValues = trainingBox.querySelectorAll(
-        ".training_values > div:first-child"
+        ".training_values .gca-training-values > div:first-child"
       );
       trainingValues.forEach((value, i) => {
         const content = value.textContent.trim().split("+")[0].trim();
@@ -922,22 +922,22 @@
 
         switch (i) {
           case 0:
-            currentTraining.str = parseFloat(content);
+            currentTraining.str = parseInt(content, 10);
             break;
           case 1:
-            currentTraining.dex = parseFloat(content);
+            currentTraining.dex = parseInt(content, 10);
             break;
           case 2:
-            currentTraining.agi = parseFloat(content);
+            currentTraining.agi = parseInt(content, 10);
             break;
           case 3:
-            currentTraining.const = parseFloat(content);
+            currentTraining.const = parseInt(content, 10);
             break;
           case 4:
-            currentTraining.char = parseFloat(content);
+            currentTraining.char = parseInt(content, 10);
             break;
           case 5:
-            currentTraining.int = parseFloat(content);
+            currentTraining.int = parseInt(content, 10);
             break;
         }
       });
@@ -946,7 +946,23 @@
   }
 
   // function get next stat to train
-  function getNextStatToTrain() {}
+  function getNextStatToTrain() {
+    // Get all stats in order of priority
+    const stats = ["str", "dex", "agi", "char", "const", "int"];
+
+    // Sort stats by priority order
+    stats.sort((a, b) => trainingOrder[a] - trainingOrder[b]);
+
+    // Find the first stat that needs to be trained
+    for (const stat of stats) {
+      if (currentTraining[stat] < trainingExpectations[stat]) {
+        return stat;
+      }
+    }
+
+    // If all stats are at or above expectations, return null
+    return null;
+  }
 
   function autoGo() {
     // Variables
@@ -1022,6 +1038,7 @@
         console.log("Extracting training values");
         extractTrainingValues();
         extractTrainingCosts();
+        console.log(getNextStatToTrain());
       }
     }
     console.log(trainingCosts);
