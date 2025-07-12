@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.33
+// @version      1.34
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -682,6 +682,114 @@
     }
   }
 
+  function setAutoFood(bool) {
+    doAutoFood = bool;
+    localStorage.setItem("doAutoFood", bool);
+    reloadSettings();
+  }
+
+  function setMinimumHealth(value) {
+    minimumHealth = parseInt(value);
+    localStorage.setItem("minimumHealth", minimumHealth);
+    reloadSettings();
+  }
+
+  // Safe mode settings
+  function setSafeMode(bool) {
+    safeMode = bool;
+    localStorage.setItem("safeMode", bool);
+
+    reloadSettings();
+  }
+
+  function setDoExpedition(bool) {
+    doExpedition = bool;
+    localStorage.setItem("doExpedition", bool);
+    reloadSettings();
+  }
+
+  function setDoTraining(bool) {
+    doTraining = bool;
+    localStorage.setItem("doTraining", bool);
+    reloadSettings();
+  }
+
+  function setTrainingExpectations(stat, value) {
+    trainingExpectations[stat] = value;
+    localStorage.setItem(
+      "trainingExpectations",
+      JSON.stringify(trainingExpectations)
+    );
+    // Actualizar solo el valor específico que cambió
+    $(`#set_training_${stat}`).val(value);
+  }
+
+  function setMonster(id) {
+    monsterId = id;
+    localStorage.setItem("monsterId", id);
+    reloadSettings();
+  }
+
+  function setDoDungeon(bool) {
+    doDungeon = bool;
+    localStorage.setItem("doDungeon", bool);
+    reloadSettings();
+  }
+
+  function setDoArena(bool) {
+    doArena = bool;
+    localStorage.setItem("doArena", bool);
+    reloadSettings();
+  }
+
+  function setDungeonDifficulty(difficulty) {
+    dungeonDifficulty = difficulty;
+    localStorage.setItem("dungeonDifficulty", difficulty);
+    reloadSettings();
+  }
+
+  function setArenaOpponentLevel(level) {
+    arenaOpponentLevel = level;
+    localStorage.setItem("arenaOpponentLevel", level);
+    reloadSettings();
+  }
+
+  function setDoCircus(bool) {
+    doCircus = bool;
+    localStorage.setItem("doCircus", bool);
+    reloadSettings();
+  }
+
+  function setCircusOpponentLevel(level) {
+    circusOpponentLevel = level;
+    localStorage.setItem("circusOpponentLevel", level);
+    reloadSettings();
+  }
+
+  function setDoEventExpedition(bool) {
+    doEventExpedition = bool;
+    localStorage.setItem("doEventExpedition", bool);
+    reloadSettings();
+  }
+
+  function setQuestTypes(type) {
+    questTypes[type] = !questTypes[type];
+    localStorage.setItem("questTypes", JSON.stringify(questTypes));
+    reloadSettings();
+  }
+
+  function setDoQuests(bool) {
+    doQuests = bool;
+    localStorage.setItem("doQuests", bool);
+    reloadSettings();
+  }
+
+  function setEventMonster(id) {
+    eventMonsterId = id;
+    localStorage.setItem("eventMonsterId", id);
+    reloadSettings();
+  }
+
   // Open Settings
   function openSettings() {
     function closeSettings() {
@@ -926,38 +1034,6 @@
     // Change Settings
 
     // Food settings
-    function setAutoFood(bool) {
-      doAutoFood = bool;
-      localStorage.setItem("doAutoFood", bool);
-      reloadSettings();
-    }
-
-    function setMinimumHealth(value) {
-      minimumHealth = parseInt(value);
-      localStorage.setItem("minimumHealth", minimumHealth);
-      reloadSettings();
-    }
-
-    // Safe mode settings
-    function setSafeMode(bool) {
-      safeMode = bool;
-      localStorage.setItem("safeMode", bool);
-
-      // Configurar actividades permitidas en modo seguro
-      doDungeon = true;
-      doCircus = true;
-      doArena = false;
-      doExpedition = false;
-      doEventExpedition = false;
-
-      reloadSettings();
-    }
-
-    function setDoExpedition(bool) {
-      doExpedition = bool;
-      localStorage.setItem("doExpedition", bool);
-      reloadSettings();
-    }
 
     $("#do_expedition_true").click(function () {
       setDoExpedition(true);
@@ -972,22 +1048,6 @@
     $("#do_expedition_false").click(function () {
       setDoExpedition(false);
     });
-
-    function setDoTraining(bool) {
-      doTraining = bool;
-      localStorage.setItem("doTraining", bool);
-      reloadSettings();
-    }
-
-    function setTrainingExpectations(stat, value) {
-      trainingExpectations[stat] = value;
-      localStorage.setItem(
-        "trainingExpectations",
-        JSON.stringify(trainingExpectations)
-      );
-      // Actualizar solo el valor específico que cambió
-      $(`#set_training_${stat}`).val(value);
-    }
 
     $("#set_training_str").on("blur keyup", function (e) {
       if (e.type === "keyup" && e.key !== "Enter") return;
@@ -1032,12 +1092,6 @@
       }
     });
 
-    function setMonster(id) {
-      monsterId = id;
-      localStorage.setItem("monsterId", id);
-      reloadSettings();
-    }
-
     $("#set_monster_id_0").click(function () {
       setMonster("0");
     });
@@ -1051,12 +1105,6 @@
       setMonster("3");
     });
 
-    function setDoDungeon(bool) {
-      doDungeon = bool;
-      localStorage.setItem("doDungeon", bool);
-      reloadSettings();
-    }
-
     $("#do_dungeon_true").click(function () {
       setDoDungeon(true);
     });
@@ -1064,24 +1112,12 @@
       setDoDungeon(false);
     });
 
-    function setDungeonDifficulty(difficulty) {
-      dungeonDifficulty = difficulty;
-      localStorage.setItem("dungeonDifficulty", difficulty);
-      reloadSettings();
-    }
-
     $("#set_dungeon_difficulty_normal").click(function () {
       setDungeonDifficulty("normal");
     });
     $("#set_dungeon_difficulty_advanced").click(function () {
       setDungeonDifficulty("advanced");
     });
-
-    function setDoArena(bool) {
-      doArena = bool;
-      localStorage.setItem("doArena", bool);
-      reloadSettings();
-    }
 
     $("#do_arena_true").click(function () {
       setDoArena(true);
@@ -1119,12 +1155,6 @@
       setDoTraining(false);
     });
 
-    function setArenaOpponentLevel(level) {
-      arenaOpponentLevel = level;
-      localStorage.setItem("arenaOpponentLevel", level);
-      reloadSettings();
-    }
-
     $("#set_arena_opponent_level_min").click(function () {
       setArenaOpponentLevel("min");
     });
@@ -1135,24 +1165,12 @@
       setArenaOpponentLevel("random");
     });
 
-    function setDoCircus(bool) {
-      doCircus = bool;
-      localStorage.setItem("doCircus", bool);
-      reloadSettings();
-    }
-
     $("#do_circus_true").click(function () {
       setDoCircus(true);
     });
     $("#do_circus_false").click(function () {
       setDoCircus(false);
     });
-
-    function setCircusOpponentLevel(level) {
-      circusOpponentLevel = level;
-      localStorage.setItem("circusOpponentLevel", level);
-      reloadSettings();
-    }
 
     $("#set_circus_opponent_level_min").click(function () {
       setCircusOpponentLevel("min");
@@ -1164,24 +1182,12 @@
       setCircusOpponentLevel("random");
     });
 
-    function setDoQuests(bool) {
-      doQuests = bool;
-      localStorage.setItem("doQuests", bool);
-      reloadSettings();
-    }
-
     $("#do_quests_true").click(function () {
       setDoQuests(true);
     });
     $("#do_quests_false").click(function () {
       setDoQuests(false);
     });
-
-    function setQuestTypes(type) {
-      questTypes[type] = !questTypes[type];
-      localStorage.setItem("questTypes", JSON.stringify(questTypes));
-      reloadSettings();
-    }
 
     $("#do_combat_quests").click(function () {
       setQuestTypes("combat");
@@ -1202,24 +1208,12 @@
       setQuestTypes("items");
     });
 
-    function setDoEventExpedition(bool) {
-      doEventExpedition = bool;
-      localStorage.setItem("doEventExpedition", bool);
-      reloadSettings();
-    }
-
     $("#do_event_expedition_true").click(function () {
       setDoEventExpedition(true);
     });
     $("#do_event_expedition_false").click(function () {
       setDoEventExpedition(false);
     });
-
-    function setEventMonster(id) {
-      eventMonsterId = id;
-      localStorage.setItem("eventMonsterId", id);
-      reloadSettings();
-    }
 
     $("#set_event_monster_id_0").click(function () {
       setEventMonster("0");
@@ -1527,16 +1521,6 @@
           .click();
       }, clickDelay);
     }
-
-    if (safeMode) {
-      doArena = false;
-      doExpedition = false;
-      doDungeon = true;
-      doCircus = true;
-      doEventExpedition = false;
-      doTraining = false;
-    }
-
     const lootModal = document.querySelector(".loot-modal");
 
     if (lootModal) {
@@ -1616,6 +1600,7 @@
     if (player.hp < minimumHealth) {
       // No activar modo seguro automáticamente cuando la salud es baja
       // Solo mostrar alerta si no está en modo seguro
+      /*
       if (!safeMode) {
         console.log("Low health");
 
@@ -1650,11 +1635,17 @@
             );
         }
         showLowHealthAlert();
-      }
+      }*/
 
       // Solo consumir comida si no está en modo seguro
       if (doAutoFood && !safeMode) {
         consumeLowestFood();
+      }
+
+      if (safeMode) {
+        setDoExpedition(false);
+        setDoArena(false);
+        setDoEventExpedition(false);
       }
       // No activar modo seguro automáticamente por baja salud
     }
