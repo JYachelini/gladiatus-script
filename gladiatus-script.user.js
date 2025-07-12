@@ -10,7 +10,7 @@
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js
-// @resource     customCSS_global  https://github.com/JYachelini/gladiatus-script/blob/master/global.css
+// @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/gladiatus-script/refs/heads/master/global.css
 // ==/UserScript==
 
 
@@ -23,16 +23,17 @@
         const globalCSS = GM_getResourceText("customCSS_global");
         GM_addStyle(globalCSS);
     };
-    
+
     addCustomCSS();
 
     /*****************
     *     Global     *
-    *****************/  
+    *****************/
 
-    const assetsUrl = 'https://github.com/JYachelini/gladiatus-script/blob/master/assets';
+    const assetsUrl = 'https://raw.githubusercontent.com/JYachelini/gladiatus-script/d9bb62a298d39d6f869a791f3dba074140b68250/assets';
 
     console.log("test");
+    console.log("hola desde github");
 
 
     let autoGoActive = sessionStorage.getItem('autoGoActive') === "true" ? true : false;
@@ -88,7 +89,7 @@
     };
 
     // Dungeon
-    
+
     let doDungeon = true;
     if (localStorage.getItem('doDungeon')) {
         doDungeon = localStorage.getItem('doDungeon') === "true" ? true : false;
@@ -135,7 +136,7 @@
     if (!document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0]){
         doEventExpedition = false;
     };
-    
+
     let eventMonsterId = 0;
     if (localStorage.getItem('eventMonsterId')) {
         eventMonsterId = Number(localStorage.getItem('eventMonsterId'));
@@ -603,7 +604,7 @@
 
             $('#quests_settings').addClass(doQuests ? 'active' : 'inactive');
             $(`#do_quests_${doQuests}`).addClass('active');
-            
+
             for (const type in questTypes) {
                 if (questTypes[type]) {
                     $(`#do_${type}_quests`).addClass('active');
@@ -823,7 +824,7 @@
                         if (url.includes('icon_items_inactive')) {
                             return 'items';
                         }
-                        
+
                         if (url.includes('icon_arena_inactive')) {
                             return 'arena';
                         }
@@ -846,10 +847,10 @@
                         if (questTypes[icon]) {
                             return quest.getElementsByClassName("quest_slot_button_accept")[0].click();
                         };
-                    }           
+                    }
 
                     $("#quest_footer_reroll input").first().click()
-                }  
+                }
 
                 checkNextQuestTime();
             }
@@ -886,7 +887,7 @@
 
                 if (!inExpeditionPage || inEventExpeditionPage) {
                     document.getElementsByClassName("cooldown_bar_link")[0].click();
-                } else { 
+                } else {
                     document.getElementsByClassName("expedition_button")[monsterId].click();
                 };
             };
@@ -944,7 +945,7 @@
 
                     if (!inArenaProvPage) {
                         document.getElementById("mainnav").getElementsByTagName("td")[1].firstElementChild.click();
-                    } else { 
+                    } else {
                         const levels = new Array();
                         levels[0] = Number(document.getElementById("own2").getElementsByTagName("td")[1].firstChild.nodeValue)
                         levels[1] = Number(document.getElementById("own2").getElementsByTagName("td")[5].firstChild.nodeValue)
@@ -961,7 +962,7 @@
                         } else {
                             opponentIndex = getRandomIntIndex(levels)
                         }
-                
+
                         document.getElementsByClassName("attack")[opponentIndex].click();
                     }
                 }
@@ -988,7 +989,7 @@
 
                     if (!inCircusProvPage) {
                         document.getElementById("mainnav").getElementsByTagName("td")[3].firstElementChild.click();
-                    } else { 
+                    } else {
                         const levels = new Array();
                         levels[0] = Number(document.getElementById("own3").getElementsByTagName("td")[1].firstChild.nodeValue)
                         levels[1] = Number(document.getElementById("own3").getElementsByTagName("td")[5].firstChild.nodeValue)
@@ -1062,7 +1063,7 @@
 
                         document.getElementsByClassName("expedition_button")[eventMonsterId].click();
                     }
-                }                
+                }
             };
 
             setTimeout(function(){
@@ -1083,7 +1084,7 @@
 
             if (safeMode === false) {
                 const actions = [];
-    
+
                 if (doExpedition === true) {
                     const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_expedition").innerText);
 
@@ -1150,7 +1151,7 @@
                 const nextAction = getNextAction(actions);
 
                 // @TODO fix nextAction if !actions.length
-    
+
                 function formatTime(timeInMs) {
                     if (timeInMs < 1000) {
                         return "0:00:00"
@@ -1168,12 +1169,12 @@
                         mins = "0" + mins;
                     };
                     let hrs = (timeInSecs - mins) / 60;
-    
+
                     return hrs + ':' + mins + ':' + secs;
                 };
 
                 var nextActionWindow = document.createElement("div");
-    
+
                 function showNextActionWindow() {
                     nextActionWindow.setAttribute("id", "nextActionWindow")
                     nextActionWindow.setAttribute("style", `
@@ -1202,16 +1203,16 @@
                 showNextActionWindow();
 
                 let nextActionCounter;
-    
+
                 nextActionCounter = setInterval(function() {
                     nextAction.time = nextAction.time - 1000;
-    
+
                     nextActionWindow.innerHTML = `
                         <span style="color: #fff;">${content.nextAction}: </span>
                         <span>${content[nextAction.name]}</span></br>
                         <span style="color: #fff;">${content.in}: </span>
                         <span>${formatTime(nextAction.time)}</span>`;
-    
+
                     if (nextAction.time <= 0) {
                         if (nextAction.index === 4) {
                             document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0].click();
