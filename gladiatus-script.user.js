@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.28
+// @version      1.29
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -58,6 +58,7 @@
   if (localStorage.getItem("safeMode")) {
     safeMode = localStorage.getItem("safeMode") === "true" ? true : false;
   }
+
   let nextEncounterTime = Number(localStorage.getItem("nextEncounter"));
 
   // Quests
@@ -1320,6 +1321,15 @@
           .getElementsByTagName("input")[0]
           .click();
       }, clickDelay);
+    }
+
+    if (safeMode) {
+      doArena = false;
+      doExpedition = false;
+      doDungeon = true;
+      doCircus = true;
+      doEventExpedition = false;
+      doTraining = false;
     }
 
     const lootModal = document.querySelector(".loot-modal");
