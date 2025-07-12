@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.38
+// @version      1.39
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -2071,113 +2071,112 @@
        *    Fast Mode    *
        ******************/
 
-      if (safeMode === false) {
-        const actions = [];
+      const actions = [];
 
-        if (doExpedition === true) {
-          const timeTo = convertTimeToMs(
-            document.getElementById("cooldown_bar_text_expedition").innerText
-          );
+      if (doExpedition === true) {
+        const timeTo = convertTimeToMs(
+          document.getElementById("cooldown_bar_text_expedition").innerText
+        );
 
-          actions.push({
-            name: "expedition",
-            time: timeTo,
-            index: 0,
-          });
-        }
+        actions.push({
+          name: "expedition",
+          time: timeTo,
+          index: 0,
+        });
+      }
 
-        if (doDungeon === true) {
-          const timeTo = convertTimeToMs(
-            document.getElementById("cooldown_bar_text_dungeon").innerText
-          );
+      if (doDungeon === true) {
+        const timeTo = convertTimeToMs(
+          document.getElementById("cooldown_bar_text_dungeon").innerText
+        );
 
-          actions.push({
-            name: "dungeon",
-            time: timeTo,
-            index: 1,
-          });
-        }
+        actions.push({
+          name: "dungeon",
+          time: timeTo,
+          index: 1,
+        });
+      }
 
-        if (doArena === true) {
-          const timeTo = convertTimeToMs(
-            document.getElementById("cooldown_bar_text_arena").innerText
-          );
+      if (doArena === true) {
+        const timeTo = convertTimeToMs(
+          document.getElementById("cooldown_bar_text_arena").innerText
+        );
 
-          actions.push({
-            name: "arena",
-            time: timeTo,
-            index: 2,
-          });
-        }
+        actions.push({
+          name: "arena",
+          time: timeTo,
+          index: 2,
+        });
+      }
 
-        if (doCircus === true) {
-          const timeTo = convertTimeToMs(
-            document.getElementById("cooldown_bar_text_ct").innerText
-          );
+      if (doCircus === true) {
+        const timeTo = convertTimeToMs(
+          document.getElementById("cooldown_bar_text_ct").innerText
+        );
 
-          actions.push({
-            name: "circusTurma",
-            time: timeTo,
-            index: 3,
-          });
-        }
+        actions.push({
+          name: "circusTurma",
+          time: timeTo,
+          index: 3,
+        });
+      }
 
-        if (doEventExpedition === true && eventPoints > 0) {
-          const timeTo =
-            localStorage.getItem("nextEventExpeditionTime") - currentTime;
+      if (doEventExpedition === true && eventPoints > 0) {
+        const timeTo =
+          localStorage.getItem("nextEventExpeditionTime") - currentTime;
 
-          actions.push({
-            name: "eventExpedition",
-            time: timeTo,
-            index: 4,
-          });
-        }
+        actions.push({
+          name: "eventExpedition",
+          time: timeTo,
+          index: 4,
+        });
+      }
 
-        function getNextAction(actions) {
-          let index = 0;
-          let minValue = actions[0].time;
+      function getNextAction(actions) {
+        let index = 0;
+        let minValue = actions[0].time;
 
-          for (let i = 1; i < actions.length; i++) {
-            if (actions[i].time < minValue) {
-              minValue = actions[i].time;
-              index = i;
-            }
+        for (let i = 1; i < actions.length; i++) {
+          if (actions[i].time < minValue) {
+            minValue = actions[i].time;
+            index = i;
           }
-          return actions[index];
+        }
+        return actions[index];
+      }
+
+      const nextAction = getNextAction(actions);
+
+      // @TODO fix nextAction if !actions.length
+
+      function formatTime(timeInMs) {
+        if (timeInMs < 1000) {
+          return "0:00:00";
         }
 
-        const nextAction = getNextAction(actions);
-
-        // @TODO fix nextAction if !actions.length
-
-        function formatTime(timeInMs) {
-          if (timeInMs < 1000) {
-            return "0:00:00";
-          }
-
-          let timeInSecs = timeInMs / 1000;
-          timeInSecs = Math.round(timeInSecs);
-          let secs = timeInSecs % 60;
-          if (secs < 10) {
-            secs = "0" + secs;
-          }
-          timeInSecs = (timeInSecs - secs) / 60;
-          let mins = timeInSecs % 60;
-          if (mins < 10) {
-            mins = "0" + mins;
-          }
-          let hrs = (timeInSecs - mins) / 60;
-
-          return hrs + ":" + mins + ":" + secs;
+        let timeInSecs = timeInMs / 1000;
+        timeInSecs = Math.round(timeInSecs);
+        let secs = timeInSecs % 60;
+        if (secs < 10) {
+          secs = "0" + secs;
         }
+        timeInSecs = (timeInSecs - secs) / 60;
+        let mins = timeInSecs % 60;
+        if (mins < 10) {
+          mins = "0" + mins;
+        }
+        let hrs = (timeInSecs - mins) / 60;
 
-        var nextActionWindow = document.createElement("div");
+        return hrs + ":" + mins + ":" + secs;
+      }
 
-        function showNextActionWindow() {
-          nextActionWindow.setAttribute("id", "nextActionWindow");
-          nextActionWindow.setAttribute(
-            "style",
-            `
+      var nextActionWindow = document.createElement("div");
+
+      function showNextActionWindow() {
+        nextActionWindow.setAttribute("id", "nextActionWindow");
+        nextActionWindow.setAttribute(
+          "style",
+          `
                         display: block;
                         position: absolute;
                         top: 120px;
@@ -2193,62 +2192,51 @@
                         border-right: 10px solid #58ffbb;
                         z-index: 999;
                     `
+        );
+        nextActionWindow.innerHTML = `
+                        <span style="color: #fff;">${
+                          content.nextAction
+                        }: </span>
+                        <span>${content[nextAction.name]}</span></br>
+                        <span style="color: #fff;">${content.in}: </span>
+                        <span>${formatTime(nextAction.time)}</span>`;
+        document
+          .getElementById("header_game")
+          .insertBefore(
+            nextActionWindow,
+            document.getElementById("header_game").children[0]
           );
-          nextActionWindow.innerHTML = `
-                        <span style="color: #fff;">${
-                          content.nextAction
-                        }: </span>
-                        <span>${content[nextAction.name]}</span></br>
-                        <span style="color: #fff;">${content.in}: </span>
-                        <span>${formatTime(nextAction.time)}</span>`;
-          document
-            .getElementById("header_game")
-            .insertBefore(
-              nextActionWindow,
-              document.getElementById("header_game").children[0]
-            );
-        }
-        showNextActionWindow();
-
-        let nextActionCounter;
-
-        nextActionCounter = setInterval(function () {
-          nextAction.time = nextAction.time - 1000;
-
-          nextActionWindow.innerHTML = `
-                        <span style="color: #fff;">${
-                          content.nextAction
-                        }: </span>
-                        <span>${content[nextAction.name]}</span></br>
-                        <span style="color: #fff;">${content.in}: </span>
-                        <span>${formatTime(nextAction.time)}</span>`;
-
-          if (nextAction.time <= 0) {
-            if (nextAction.index === 4) {
-              document
-                .getElementById("submenu2")
-                .getElementsByClassName("menuitem glow")[0]
-                .click();
-            } else {
-              setTimeout(function () {
-                document
-                  .getElementsByClassName("cooldown_bar_link")
-                  [nextAction.index].click();
-              }, clickDelay);
-            }
-          }
-        }, 1000);
-      } else {
-        /******************
-         *    Safe Mode    *
-         ******************/
-        console.log("Safe Mode");
-        doCircus = true;
-        doArena = false;
-        doExpedition = false;
-        doEventExpedition = false;
-        doDungeon = true;
       }
+      showNextActionWindow();
+
+      let nextActionCounter;
+
+      nextActionCounter = setInterval(function () {
+        nextAction.time = nextAction.time - 1000;
+
+        nextActionWindow.innerHTML = `
+                        <span style="color: #fff;">${
+                          content.nextAction
+                        }: </span>
+                        <span>${content[nextAction.name]}</span></br>
+                        <span style="color: #fff;">${content.in}: </span>
+                        <span>${formatTime(nextAction.time)}</span>`;
+
+        if (nextAction.time <= 0) {
+          if (nextAction.index === 4) {
+            document
+              .getElementById("submenu2")
+              .getElementsByClassName("menuitem glow")[0]
+              .click();
+          } else {
+            setTimeout(function () {
+              document
+                .getElementsByClassName("cooldown_bar_link")
+                [nextAction.index].click();
+            }, clickDelay);
+          }
+        }
+      }, 1000);
     }
   }
 
