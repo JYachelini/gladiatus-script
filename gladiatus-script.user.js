@@ -200,7 +200,7 @@
 
   let currentTraining = {
     str: 0,
-    dex: 100,
+    dex: 0,
     agi: 0,
     char: 0,
     const: 0,
@@ -239,11 +239,6 @@
     trainingOrder = JSON.parse(localStorage.getItem("trainingOrder"));
   }
 
-  const currentGold = parseFloat(
-    document.getElementById("sstat_gold_val").innerHTML.replace(/\./g, "")
-  );
-  console.log(currentGold);
-
   /*****************
    *  Translations  *
    *****************/
@@ -272,6 +267,14 @@
     soon: "Soon...",
     type: "Type",
     yes: "Yes",
+    training: "Training",
+    trainingExpectations: "Training Expectations",
+    str: "STR",
+    dex: "DEX",
+    agi: "AGI",
+    char: "CHAR",
+    const: "CON",
+    int: "INT",
   };
 
   const contentPL = {
@@ -298,6 +301,14 @@
     soon: "Wkrótce...",
     type: "Rodzaj",
     yes: "Tak",
+    training: "Trening",
+    trainingExpectations: "Oczekiwania Treningowe",
+    str: "STR",
+    dex: "DEX",
+    agi: "AGI",
+    char: "CHAR",
+    const: "CON",
+    int: "INT",
   };
 
   const contentES = {
@@ -324,6 +335,14 @@
     soon: "Próximamente...",
     type: "Tipo",
     yes: "Si",
+    training: "Entrenamiento",
+    trainingExpectations: "Expectativas de Entrenamiento",
+    str: "STR",
+    dex: "DEX",
+    agi: "AGI",
+    char: "CHAR",
+    const: "CON",
+    int: "INT",
   };
 
   let content;
@@ -513,6 +532,44 @@
                             <div id="set_event_monster_id_3" class="settingsButton">Boss</div>
                         </div>
                     </div>
+
+                    <div
+                        id="training_settings"
+                        class="settings_box"
+                    >
+                        <div class="settingsHeaderBig">${content.training}</div>
+                        <div class="settingsSubcontent">
+                            <div id="do_training_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_training_false" class="settingsButton">${content.no}</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.trainingExpectations}</div>
+                        <div class="settingsSubcontent">
+                            <div class="stat-input-container">
+                                <span>${content.str}</span>
+                                <input type="number" id="set_training_str" value="${trainingExpectations.str}">
+                            </div>
+                            <div class="stat-input-container">
+                                <span>${content.dex}</span>
+                                <input type="number" id="set_training_dex" value="${trainingExpectations.dex}">
+                            </div>
+                            <div class="stat-input-container">
+                                <span>${content.agi}</span>
+                                <input type="number" id="set_training_agi" value="${trainingExpectations.agi}">
+                            </div>
+                            <div class="stat-input-container">
+                                <span>${content.char}</span>
+                                <input type="number" id="set_training_char" value="${trainingExpectations.char}">
+                            </div>
+                            <div class="stat-input-container">
+                                <span>${content.const}</span>
+                                <input type="number" id="set_training_const" value="${trainingExpectations.const}">
+                            </div>
+                            <div class="stat-input-container">
+                                <span>${content.int}</span>
+                                <input type="number" id="set_training_int" value="${trainingExpectations.int}">
+                            </div>
+                        </div>
+                    </div>
                 </div>`;
     document
       .getElementById("header_game")
@@ -573,6 +630,47 @@
     });
     $("#do_expedition_false").click(function () {
       setDoExpedition(false);
+    });
+
+    function setDoTraining(bool) {
+      doTraining = bool;
+      localStorage.setItem("doTraining", bool);
+      reloadSettings();
+    }
+
+    $("#do_training_true").click(function () {
+      setDoTraining(true);
+    });
+    $("#do_training_false").click(function () {
+      setDoTraining(false);
+    });
+
+    function setTrainingExpectations(stat, value) {
+      trainingExpectations[stat] = value;
+      localStorage.setItem(
+        "trainingExpectations",
+        JSON.stringify(trainingExpectations)
+      );
+      reloadSettings();
+    }
+
+    $("#set_training_str").on("input", function () {
+      setTrainingExpectations("str", $(this).val());
+    });
+    $("#set_training_dex").on("input", function () {
+      setTrainingExpectations("dex", $(this).val());
+    });
+    $("#set_training_agi").on("input", function () {
+      setTrainingExpectations("agi", $(this).val());
+    });
+    $("#set_training_char").on("input", function () {
+      setTrainingExpectations("char", $(this).val());
+    });
+    $("#set_training_const").on("input", function () {
+      setTrainingExpectations("const", $(this).val());
+    });
+    $("#set_training_int").on("input", function () {
+      setTrainingExpectations("int", $(this).val());
     });
 
     function setMonster(id) {
