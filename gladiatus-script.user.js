@@ -838,6 +838,7 @@
       const trainingValues = trainingBox.querySelectorAll(".training_value");
       trainingValues.forEach((value, i) => {
         const content = value.textContent.trim();
+        console.log(content);
 
         switch (i) {
           case 0:
@@ -937,10 +938,12 @@
           }
         }
       } else {
+        console.log("Extracting training values");
         extractTrainingValues();
       }
     }
     console.log(training);
+    setTimeout({}, 100000000);
 
     /***************
      *   Use Food   *
