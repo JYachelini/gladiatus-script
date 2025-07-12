@@ -913,7 +913,12 @@
     const trainingBox = document.querySelector("#training_box");
     if (trainingBox) {
       const trainingValues = trainingBox.querySelectorAll(
-        ".training_values.gca-training-values > div:first-child"
+        "#char_f0 > div:first-child, " +
+          "#char_f1 > div:first-child, " +
+          "#char_f2 > div:first-child, " +
+          "#char_f3 > div:first-child, " +
+          "#char_f4 > div:first-child, " +
+          "#char_f5 > div:first-child"
       );
       trainingValues.forEach((value, i) => {
         const content = value.textContent.trim().split("+")[0].trim();
