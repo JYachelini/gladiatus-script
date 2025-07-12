@@ -946,7 +946,7 @@
             break;
         }
       });
-      localStorage.setItem("trainingCosts", JSON.stringify(trainingCosts));
+      localStorage.setItem("currentTraining", JSON.stringify(currentTraining));
     }
   }
 
