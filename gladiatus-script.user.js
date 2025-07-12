@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.35
+// @version      1.36
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -796,12 +796,19 @@
   }
 
   function reloadSettings() {
-    closeSettings();
+    if (document.getElementById("settingsWindow")) {
+      closeSettings();
+    }
     openSettings();
   }
 
   // Open Settings
   function openSettings() {
+    // Si el settingsWindow ya existe, no crear uno nuevo
+    if (document.getElementById("settingsWindow")) {
+      return;
+    }
+
     var settingsWindow = document.createElement("div");
     settingsWindow.setAttribute("id", "settingsWindow");
     settingsWindow.innerHTML = `
