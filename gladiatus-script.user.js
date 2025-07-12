@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.29
+// @version      1.30
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -107,7 +107,9 @@
       "div.charmercsel[onclick*='doll=1']"
     );
     if (mainCharacter) {
-      mainCharacter.click();
+      if (!mainCharacter.classList.contains("active")) {
+        mainCharacter.click();
+      }
     }
 
     // Esperar un momento para que cargue el personaje
