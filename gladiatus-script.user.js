@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.32
+// @version      1.33
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -106,11 +106,129 @@
     const mainCharacter = document.querySelector(
       "div.charmercsel[onclick*='doll=1']"
     );
+
+    // Si no estamos en overview, buscar y hacer clic en el enlace
+    if (!isInOverviewPage()) {
+      const overviewLink = document.querySelector(
+        "a.menuitem[href*='mod=overview']"
+      );
+      if (overviewLink) {
+        overviewLink.click();
+        return; // Detener la ejecución después de hacer clic
+      }
+    }
+
     if (mainCharacter) {
       if (!mainCharacter.classList.contains("active")) {
         mainCharacter.click();
       }
     }
+
+    setTimeout(() => {
+      // Click en el inventario 1
+      const inventoryTab = document.querySelector(
+        "#inventory_nav a[data-bag-number='512']"
+      );
+      if (inventoryTab) {
+        inventoryTab.click();
+        // Esperar un momento para que se cargue el inventario
+        setTimeout(() => {
+          // Si estamos en modo seguro y la salud está por debajo del mínimo, no consumir comida
+          if (safeMode && player.hp <= minimumHealth) {
+            console.log("En modo seguro y salud baja, no consumiendo comida");
+            return;
+          }
+
+          // Buscar todas las comidas en el inventario
+          const foodItems = document.querySelectorAll(
+            "div[data-vitality-attached='true']"
+          );
+
+          if (foodItems.length === 0) {
+            safeMode = true;
+            return;
+          }
+
+          // Encontrar la comida que cura menos
+          let lowestFood = null;
+          let lowestHeal = Infinity;
+
+          foodItems.forEach((item) => {
+            const vitality = parseInt(item.getAttribute("data-vitality"));
+            if (vitality < lowestHeal) {
+              lowestHeal = vitality;
+              lowestFood = item;
+            }
+          });
+
+          if (lowestFood) {
+            // Obtener el secure hash y token CSRF
+            const secureHash = window.location.search.match(/sh=([^&]+)/)?.[1];
+            const csrfToken = document.querySelector(
+              'meta[name="csrf-token"]'
+            )?.content;
+
+            if (!secureHash || !csrfToken) {
+              console.error("No se pudo obtener secure hash o CSRF token");
+              return;
+            }
+
+            // Obtener las coordenadas de la comida
+            const xCoord = parseInt(lowestFood.getAttribute("data-position-x"));
+            const yCoord = parseInt(lowestFood.getAttribute("data-position-y"));
+
+            // Preparar los datos para el AJAX
+            const params = new URLSearchParams({
+              from: 512, // Inventario principal
+              fromX: xCoord,
+              fromY: yCoord,
+              to: 8, // player portrait
+              toX: 1,
+              toY: 1,
+              amount: 1,
+              doll: 1,
+              sh: secureHash,
+            });
+
+            const requestUrl = `ajax.php?mod=inventory&submod=move&${params}`;
+            const bodyParams = new URLSearchParams();
+            bodyParams.append("a", new Date().getTime());
+
+            // Hacer la petición AJAX
+            fetch(requestUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/x-www-form-urlencoded; charset=UTF-8",
+                "X-CSRF-Token": csrfToken,
+                "X-Requested-With": "XMLHttpRequest",
+                Origin: window.location.origin,
+                Referer: `${window.location.origin}/game/index.php?mod=overview&sh=${secureHash}`,
+              },
+              body: bodyParams,
+              credentials: "include",
+            })
+              .then((response) => response.text())
+              .then((text) => {
+                console.log("Raw response:", text);
+                try {
+                  const data = JSON.parse(text);
+                  console.log("Parsed JSON:", data);
+                  // Recargar la página después de consumir la comida
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 1000);
+                } catch (e) {
+                  console.error("JSON parsing failed", e);
+                }
+              })
+              .catch((error) => {
+                console.error("Fetch error:", error);
+              });
+          }
+        }, 500);
+      }
+    }, 500);
 
     // Esperar un momento para que cargue el personaje
     setTimeout(() => {
@@ -824,6 +942,14 @@
     function setSafeMode(bool) {
       safeMode = bool;
       localStorage.setItem("safeMode", bool);
+
+      // Configurar actividades permitidas en modo seguro
+      doDungeon = true;
+      doCircus = true;
+      doArena = false;
+      doExpedition = false;
+      doEventExpedition = false;
+
       reloadSettings();
     }
 
@@ -1144,6 +1270,18 @@
       );
       $(`#do_event_expedition_${doEventExpedition}`).addClass("active");
       $(`#set_event_monster_id_${eventMonsterId}`).addClass("active");
+
+      // Training settings
+      $("#training_settings").addClass(doTraining ? "active" : "inactive");
+      $(`#do_training_${doTraining}`).addClass("active");
+
+      // Food settings
+      $("#food_settings").addClass(doAutoFood ? "active" : "inactive");
+      $(`#do_auto_food_${doAutoFood}`).addClass("active");
+
+      // Safe mode settings
+      $("#safe_mode_settings").addClass(safeMode ? "active" : "inactive");
+      $(`#do_safe_mode_${safeMode}`).addClass("active");
     }
 
     setActiveButtons();
@@ -1475,16 +1613,19 @@
      *   Use Food   *
      ***************/
 
-    if (player.hp < minimumHealth && !safeMode) {
-      /*console.log("Low health");
+    if (player.hp < minimumHealth) {
+      // No activar modo seguro automáticamente cuando la salud es baja
+      // Solo mostrar alerta si no está en modo seguro
+      if (!safeMode) {
+        console.log("Low health");
 
-      var lowHealthAlert = document.createElement("div");
+        var lowHealthAlert = document.createElement("div");
 
-      function showLowHealthAlert() {
-        lowHealthAlert.setAttribute("id", "lowHealth");
-        lowHealthAlert.setAttribute(
-          "style",
-          `
+        function showLowHealthAlert() {
+          lowHealthAlert.setAttribute("id", "lowHealth");
+          lowHealthAlert.setAttribute(
+            "style",
+            `
                     display: block;
                     position: absolute;
                     top: 120px;
@@ -1499,28 +1640,26 @@
                     border-right: 10px solid #ea1414;
                     z-index: 999;
                 `
-        );
-        lowHealthAlert.innerHTML = "<span>Low Health!</span>";
-        document
-          .getElementById("header_game")
-          .insertBefore(
-            lowHealthAlert,
-            document.getElementById("header_game").children[0]
           );
+          lowHealthAlert.innerHTML = "<span>Low Health!</span>";
+          document
+            .getElementById("header_game")
+            .insertBefore(
+              lowHealthAlert,
+              document.getElementById("header_game").children[0]
+            );
+        }
+        showLowHealthAlert();
       }
-      showLowHealthAlert();*/
 
-      //doExpedition = false;
-      //doEventExpedition = false;
-      if (doAutoFood) {
+      // Solo consumir comida si no está en modo seguro
+      if (doAutoFood && !safeMode) {
         consumeLowestFood();
-      } else {
-        safeMode = true;
       }
-      //window.reload();
+      // No activar modo seguro automáticamente por baja salud
+    }
 
-      // @TODO
-    } else if (doQuests === true && nextQuestTime < currentTime) {
+    if (doQuests === true && nextQuestTime < currentTime) {
       /****************
        * Handle Quests *
        ****************/
