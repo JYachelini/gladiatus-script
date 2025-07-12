@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.3
+// @version      1.4
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -31,9 +31,6 @@
 
   const assetsUrl =
     "https://raw.githubusercontent.com/JYachelini/gladiatus-script/d9bb62a298d39d6f869a791f3dba074140b68250/assets";
-
-  console.log("test");
-  console.log("test desde github");
 
   let autoGoActive =
     sessionStorage.getItem("autoGoActive") === "true" ? true : false;
@@ -833,7 +830,7 @@
 
   // Function to extract training values
   function extractTrainingValues() {
-    const trainingBox = document.querySelector(".training_box");
+    const trainingBox = document.querySelector("#training_box");
     if (trainingBox) {
       const trainingValues = trainingBox.querySelectorAll(".training_value");
       trainingValues.forEach((value, i) => {
