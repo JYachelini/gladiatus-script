@@ -57,10 +57,11 @@
 #settingsContent
 {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     margin-top: 20px;
     width: 100%;
     gap: 20px;
+    justify-content: space-between;
 }
 
 .settingsHeaderBig
@@ -115,6 +116,8 @@
     padding: 15px;
     border: 1px solid #612d04;
     border-radius: 5px;
+    flex: 1 1 45%;
+    min-width: 200px;
 }
 
 .settings_box .settingsHeaderBig {
