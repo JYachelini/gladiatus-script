@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.25
+// @version      1.27
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -55,6 +55,9 @@
   // Mode
 
   let safeMode = false;
+  if (localStorage.getItem("safeMode")) {
+    safeMode = localStorage.getItem("safeMode") === "true" ? true : false;
+  }
   let nextEncounterTime = Number(localStorage.getItem("nextEncounter"));
 
   // Quests
@@ -72,7 +75,16 @@
     items: true,
   };
 
-  // Funciones de comida
+  let minimumHealth = 20;
+  if (localStorage.getItem("minimumHealth")) {
+    minimumHealth = Number(localStorage.getItem("minimumHealth"));
+  }
+
+  // Auto food
+  let doAutoFood = false;
+  if (localStorage.getItem("doAutoFood")) {
+    doAutoFood = localStorage.getItem("doAutoFood") === "true" ? true : false;
+  }
   function isInOverviewPage() {
     return window.location.href.includes("mod=overview");
   }
@@ -105,6 +117,7 @@
       );
 
       if (foodItems.length === 0) {
+        safeMode = true;
         return;
       }
 
@@ -121,9 +134,16 @@
       });
 
       if (lowestFood) {
-        // Simular click en la comida
-        //lowestFood.click();
-        console.log(lowestFood);
+        // Simular doble click en la comida
+        lowestFood.click();
+        setTimeout(() => {
+          lowestFood.click();
+        }, 100);
+
+        // Esperar un momento y recargar la página
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       }
     }, 500);
   }
@@ -339,6 +359,10 @@
     char: "CHAR",
     const: "CON",
     int: "INT",
+    food: "Food",
+    minimumHealth: "Minimum Health",
+    safeMode: "Safe Mode",
+    autoFood: "Auto Food",
   };
 
   const contentPL = {
@@ -373,6 +397,10 @@
     char: "CHAR",
     const: "CON",
     int: "INT",
+    food: "Jedzenie",
+    minimumHealth: "Minimum Health",
+    safeMode: "Safe Mode",
+    autoFood: "Auto Food",
   };
 
   const contentES = {
@@ -407,6 +435,10 @@
     char: "CHAR",
     const: "CON",
     int: "INT",
+    food: "Comida",
+    minimumHealth: "Salud Mínima",
+    safeMode: "Modo Seguro",
+    autoFood: "Auto Comida",
   };
 
   let content;
@@ -598,6 +630,32 @@
                     </div>
 
                     <div
+                        id="food_settings"
+                        class="settings_box"
+                    >
+                        <div class="settingsHeaderBig">${content.food}</div>
+                        <div class="settingsSubcontent">
+                            <div id="do_auto_food_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_auto_food_false" class="settingsButton">${content.no}</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.minimumHealth}</div>
+                        <div class="settingsSubcontent">
+                            <input type="number" id="set_minimum_health" value="${minimumHealth}">
+                        </div>
+                    </div>
+
+                    <div
+                        id="safe_mode_settings"
+                        class="settings_box"
+                    >
+                        <div class="settingsHeaderBig">${content.safeMode}</div>
+                        <div class="settingsSubcontent">
+                            <div id="do_safe_mode_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_safe_mode_false" class="settingsButton">${content.no}</div>
+                        </div>
+                    </div>
+
+                    <div
                         id="training_settings"
                         class="settings_box"
                     >
@@ -683,6 +741,26 @@
 
     // Change Settings
 
+    // Food settings
+    function setAutoFood(bool) {
+      doAutoFood = bool;
+      localStorage.setItem("doAutoFood", bool);
+      reloadSettings();
+    }
+
+    function setMinimumHealth(value) {
+      minimumHealth = parseInt(value);
+      localStorage.setItem("minimumHealth", minimumHealth);
+      reloadSettings();
+    }
+
+    // Safe mode settings
+    function setSafeMode(bool) {
+      safeMode = bool;
+      localStorage.setItem("safeMode", bool);
+      reloadSettings();
+    }
+
     function setDoExpedition(bool) {
       doExpedition = bool;
       localStorage.setItem("doExpedition", bool);
@@ -696,18 +774,18 @@
       setDoExpedition(false);
     });
 
+    $("#do_expedition_true").click(function () {
+      setDoExpedition(true);
+    });
+    $("#do_expedition_false").click(function () {
+      setDoExpedition(false);
+    });
+
     function setDoTraining(bool) {
       doTraining = bool;
       localStorage.setItem("doTraining", bool);
       reloadSettings();
     }
-
-    $("#do_training_true").click(function () {
-      setDoTraining(true);
-    });
-    $("#do_training_false").click(function () {
-      setDoTraining(false);
-    });
 
     function setTrainingExpectations(stat, value) {
       trainingExpectations[stat] = value;
@@ -794,6 +872,31 @@
     });
     $("#do_arena_false").click(function () {
       setDoArena(false);
+    });
+
+    $("#do_auto_food_true").click(function () {
+      setAutoFood(true);
+    });
+    $("#do_auto_food_false").click(function () {
+      setAutoFood(false);
+    });
+
+    $("#set_minimum_health").on("input", function () {
+      setMinimumHealth($(this).val());
+    });
+
+    $("#do_safe_mode_true").click(function () {
+      setSafeMode(true);
+    });
+    $("#do_safe_mode_false").click(function () {
+      setSafeMode(false);
+    });
+
+    $("#do_training_true").click(function () {
+      setDoTraining(true);
+    });
+    $("#do_training_false").click(function () {
+      setDoTraining(false);
     });
 
     function setArenaOpponentLevel(level) {
@@ -1269,7 +1372,7 @@
      *   Use Food   *
      ***************/
 
-    if (player.hp < 10) {
+    if (player.hp < minimumHealth && !safeMode) {
       /*console.log("Low health");
 
       var lowHealthAlert = document.createElement("div");
@@ -1306,7 +1409,11 @@
 
       //doExpedition = false;
       //doEventExpedition = false;
-      consumeLowestFood();
+      if (doAutoFood) {
+        consumeLowestFood();
+      } else {
+        safeMode = true;
+      }
       //window.reload();
 
       // @TODO
@@ -1900,8 +2007,12 @@
         /******************
          *    Safe Mode    *
          ******************/
-        //TODO
-        console.log("No safe mode yet");
+        console.log("Safe Mode");
+        doCircus = true;
+        doArena = false;
+        doExpedition = false;
+        doEventExpedition = false;
+        doDungeon = true;
       }
     }
   }
