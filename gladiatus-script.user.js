@@ -915,9 +915,7 @@
     // Verificar si estamos en la página de entrenamiento
 
     if (doTraining) {
-      const isPageTraining = window.location.href.includes(
-        "index.php?mod=training&sh=9af516f98e9f93ffde5056b12c962763"
-      );
+      const isPageTraining = window.location.href.includes("mod=training");
       if (!isPageTraining) {
         if (
           !training.dexReq ||
