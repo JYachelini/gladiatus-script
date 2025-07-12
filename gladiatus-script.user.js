@@ -33,7 +33,7 @@
     const assetsUrl = 'https://raw.githubusercontent.com/JYachelini/gladiatus-script/d9bb62a298d39d6f869a791f3dba074140b68250/assets';
 
     console.log("test");
-    console.log("hola desde github");
+    console.log("test desde github");
 
 
     let autoGoActive = sessionStorage.getItem('autoGoActive') === "true" ? true : false;
