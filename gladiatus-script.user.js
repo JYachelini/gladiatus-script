@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script - JYachelini version
-// @version      1.43
+// @version      1.44
 // @description  Gladiatus Script
 // @author       JYachelini
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -145,7 +145,7 @@
           );
 
           if (foodItems.length === 0) {
-            safeMode = true;
+            setSafeMode(true);
             return;
           }
 
@@ -227,107 +227,6 @@
               });
           }
         }, 500);
-      }
-    }, 500);
-
-    // Esperar un momento para que cargue el personaje
-    setTimeout(() => {
-      // Click en el inventario 1
-      const inventoryTab = document.querySelector(
-        "#inventory_nav a[data-bag-number='512']"
-      );
-      if (inventoryTab) {
-        inventoryTab.click();
-      }
-    }, 500);
-
-    // Esperar un momento para que se cargue el inventario
-    setTimeout(() => {
-      // Buscar todas las comidas en el inventario
-      const foodItems = document.querySelectorAll(
-        "div[data-vitality-attached='true']"
-      );
-
-      if (foodItems.length === 0) {
-        safeMode = true;
-        return;
-      }
-
-      // Encontrar la comida que cura menos
-      let lowestFood = null;
-      let lowestHeal = Infinity;
-
-      foodItems.forEach((item) => {
-        const vitality = parseInt(item.getAttribute("data-vitality"));
-        if (vitality < lowestHeal) {
-          lowestHeal = vitality;
-          lowestFood = item;
-        }
-      });
-
-      if (lowestFood) {
-        // Obtener el secure hash y token CSRF
-        const secureHash = window.location.search.match(/sh=([^&]+)/)?.[1];
-        const csrfToken = document.querySelector(
-          'meta[name="csrf-token"]'
-        )?.content;
-
-        if (!secureHash || !csrfToken) {
-          console.error("No se pudo obtener secure hash o CSRF token");
-          return;
-        }
-
-        // Obtener las coordenadas de la comida
-        const xCoord = parseInt(lowestFood.getAttribute("data-position-x"));
-        const yCoord = parseInt(lowestFood.getAttribute("data-position-y"));
-
-        // Preparar los datos para el AJAX
-        const params = new URLSearchParams({
-          from: 512, // Inventario principal
-          fromX: xCoord,
-          fromY: yCoord,
-          to: 8, // player portrait
-          toX: 1,
-          toY: 1,
-          amount: 1,
-          doll: 1,
-          sh: secureHash,
-        });
-
-        const requestUrl = `ajax.php?mod=inventory&submod=move&${params}`;
-        const bodyParams = new URLSearchParams();
-        bodyParams.append("a", new Date().getTime());
-
-        // Hacer la petición AJAX
-        fetch(requestUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "X-CSRF-Token": csrfToken,
-            "X-Requested-With": "XMLHttpRequest",
-            Origin: window.location.origin,
-            Referer: `${window.location.origin}/game/index.php?mod=overview&sh=${secureHash}`,
-          },
-          body: bodyParams,
-          credentials: "include",
-        })
-          .then((response) => response.text())
-          .then((text) => {
-            console.log("Raw response:", text);
-            try {
-              const data = JSON.parse(text);
-              console.log("Parsed JSON:", data);
-              // Recargar la página después de consumir la comida
-              setTimeout(() => {
-                window.location.reload();
-              }, 1000);
-            } catch (e) {
-              console.error("JSON parsing failed", e);
-            }
-          })
-          .catch((error) => {
-            console.error("Fetch error:", error);
-          });
       }
     }, 500);
   }
