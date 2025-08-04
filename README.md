@@ -20,7 +20,7 @@ Installation:
 ---------
 
 1. Install tampermonkey addon: http://tampermonkey.net/
-2. After installation click here: https://github.com/ebodziony/gladiatus-script/raw/master/gladiatus-script.user.js and press install.
+2. After installation click here: https://github.com/JYachelini/gladiatus-script/raw/master/gladiatus-script.user.js and press install.
 
 Usage:
 ---------
@@ -30,7 +30,7 @@ Usage:
 3. Enjoy
 
 
-![N|Solid](https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/preview.jpg)
+![N|Solid](https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/preview.jpg)
 
 To do:
 ---------
@@ -40,4 +40,4 @@ To do:
 
 Bugs:
 ---------
-  - If you found any, please report it [here](https://github.com/ebodziony/gladiatus-script/issues)
+  - If you found any, please report it [here](https://github.com/JYachelini/gladiatus-script/issues)
