@@ -677,6 +677,11 @@
     reloadSettings();
   }
 
+  function setQuestArena(bool) {
+    questTypes["arena"] = bool;
+    localStorage.setItem("questTypes", JSON.stringify(questTypes));
+  }
+
   function setDoQuests(bool) {
     doQuests = bool;
     localStorage.setItem("doQuests", bool);
@@ -1623,8 +1628,13 @@
         setDoExpedition(false);
         setDoArena(false);
         setDoEventExpedition(false);
+        setQuestArena(false);
       }
       // No activar modo seguro automáticamente por baja salud
+    } else {
+      setDoExpedition(true);
+      setSafeMode(false);
+      //setQuestArena(true)
     }
 
     if (doQuests === true && nextQuestTime < currentTime) {
@@ -1732,7 +1742,7 @@
           nextQuestTime = currentTime + nextQuestIn;
           localStorage.setItem("nextQuestTime", nextQuestTime);
         } else {
-          nextQuestTime = currentTime + 5000;
+          nextQuestTime = currentTime + 10000;
           localStorage.setItem("nextQuestTime", nextQuestTime);
         }
 
@@ -1877,6 +1887,12 @@
             }
 
             document.getElementsByClassName("attack")[opponentIndex].click();
+
+            // added if reached 5 figths
+            setTimeout(function () {
+              const retry = document.getElementById("linkbod");
+              if (retry) retry.click();
+            }, clickDelay + 100);
           }
         }
       }
@@ -2217,5 +2233,8 @@
 
   if (autoGoActive) {
     window.onload = autoGo();
+    setTimeout(() => {
+      location.reload();
+    }, 300000);
   }
 })();
