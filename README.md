@@ -30,7 +30,7 @@ Usage:
 3. Enjoy
 
 
-![N|Solid](https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/preview.jpg)
+![N|Solid](https://raw.githubusercontent.com/JYachelini/gladiatus-script/master/assets/preview.jpg)
 
 To do:
 ---------
